@@ -9,7 +9,7 @@ C = 1
 max = 5
 
 # size of dataset
-n = 3 
+n = 3
 m = 3
 
 
@@ -41,6 +41,7 @@ i_digit = {}
 y_str = {}
 y_digit = {}
 
+
 def generate_dataset(m, n):
     global w_str
     global w_digit
@@ -53,6 +54,7 @@ def generate_dataset(m, n):
             w_digit[count] = s
 
             count += 1
+
 
 def generate_outputs(c, m):
     global o_str
@@ -102,7 +104,6 @@ def generate_simulation_variables(c, m, k, max):
     global y_digit
     global count
 
-
     for a in range(c):
         for i in range(m):
             for b in range(k):
@@ -113,14 +114,6 @@ def generate_simulation_variables(c, m, k, max):
                     count += 1
 
 
-
-
-    
-
-
-
-
-
 generate_dataset(m, n)
 generate_outputs(C, m)
 generate_weights(C, max)
@@ -128,29 +121,30 @@ generate_gate_inputs(C, m, k)
 generate_simulation_variables(C, m, k, max)
 
 
-
 formula = CNF()
 
-#print("w:", w_str)
-#print("i:", i_str)
+# print("w:", w_str)
+# print("i:", i_str)
 
 # create clauses relating dataset variables with gate input variables (should be equivalent)
+
+
 def relate_w_i(c, m, k):
 
     for a in range(c):
         for i in range(m):
             for b in range(k):
                 w_key = "w" + str(i + 1) + str(b+1)
-                i_key = "i" + str (a+1) + str(i + 1) + str(b+1)
+                i_key = "i" + str(a+1) + str(i + 1) + str(b+1)
                 formula.append([i_str[i_key], -w_str[w_key]])
                 formula.append([-i_str[i_key], w_str[w_key]])
 
-#relate_w_i(C, m, k)
-#print(formula.clauses)
+# relate_w_i(C, m, k)
+# print(formula.clauses)
 
 
-print("w:", w_str)
-print("o:", o_str)
+# print("w:", w_str)
+# print("o:", o_str)
 
 
 # create clauses relating dataset labels with output variables (they should be equivalent)
@@ -158,67 +152,78 @@ def relate_w_o(c, m):
     for a in range(c):
         for i in range(m):
             w_key = "w" + str(i + 1) + str(0)
-            o_key = "o" + str (a+1) + str(i + 1)
+            o_key = "o" + str(a+1) + str(i + 1)
             formula.append([w_str[w_key], -o_str[o_key]])
             formula.append([-w_str[w_key], o_str[o_key]])
-                
 
 
+# relate_w_o(C, m)
+
+# print(formula.clauses)
+
+# print("y", y_str)
+# print()
+# print("omega", omega_str)
+# print()
+# print("o", o_str)
+# print()
 
 
-relate_w_o(C, m)
+# create clauses relating output variables with weight variables and simulations variables
+def relate_y_omega_o(c, m, max):
+    for a in range(c):
+        for i in range(m):
+            for v in range(max):
+                for v_prime in range(max):
+                    if v_prime >= v:
+                        y_key = "y" + str(a + 1) + str(i + 1) + \
+                            str(k) + str(v_prime)
+                        o_key = "o" + str(a+1) + str(i + 1)
+                        omega_key = "omega" + str(a + 1) + str(v)
+                        formula.append(
+                            [-y_str[y_key], -omega_str[omega_key], o_str[o_key]])
+
+
+# relate_y_omega_o(C, m, max)
+# print(formula.clauses)
+# print("Y:", y_str)
+# print()
+
+
+def uniqueness_y(c, m, k, max):
+    for a in range(c):
+        for i in range(m):
+            for b in range(k):
+                for v in range(max):
+                    for v_prime in range(max):
+                        if v != v_prime:
+                            y_key_1 = "y" + str(a + 1) + \
+                                str(i + 1) + str(b+1) + str(v)
+                            y_key_2 = "y" + \
+                                str(a + 1) + str(i + 1) + \
+                                str(b+1) + str(v_prime)
+                            formula.append([y_str[y_key_1], -y_str[y_key_2]])
+
+
+# uniqueness_y(C, m, k, max)
+
+# print(formula.clauses)
+
+print("Omega:", omega_str)
+
+
+def uniqueness_omega(c, max):
+    for a in range(c):
+        for v in range(max):
+            for v_prime in range(max):
+                if v != v_prime:
+                    omega_key_1 = "omega" + str(a + 1) + str(v)
+                    omega_key_2 = "omega" + str(a + 1) + str(v_prime)
+                    formula.append([omega_str[omega_key_1], -omega_str[omega_key_2]])
+
+uniqueness_omega(C, max)
 
 print(formula.clauses)
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # #dataset
 # w = [
@@ -240,7 +245,7 @@ print(formula.clauses)
 # # gate input
 # input = [
 #     [
-        
+
 #         [23, 24],
 #         [-25, -26],
 #         [27, -28]
@@ -279,10 +284,6 @@ print(formula.clauses)
 #             return i
 
 
-
-
-
-
 # def formula(dataset):
 
 #     k = 2
@@ -291,19 +292,19 @@ print(formula.clauses)
 #     for i in range(len(dataset)):
 #         print("data:")
 #         print(i)
-#         for b in range(1, k): 
+#         for b in range(1, k):
 #                 print("i:")
 #                 print(i)
 #                 print("B:")
 #                 print(b-1)
-#                 solver.add_clause([input[0][i][b-1], dataset[i][b-1] * -1]) 
+#                 solver.add_clause([input[0][i][b-1], dataset[i][b-1] * -1])
 #                 solver.add_clause([input[0][i][b-1] * -1, dataset[i][b-1]]),
-#                 solver.add_clause([w[i][0], o[0][i] * -1]), 
+#                 solver.add_clause([w[i][0], o[0][i] * -1]),
 #                 solver.add_clause([w[i][0]*-1, o[0][i]]),
 #                 for v in range(len(omega[0])):
 #                     # add all clauses for when v' >= v. also add all clauses for when v != v' for the others
 #                     if (omega[0][v] > 0):
-#                         for v_, var in enumerate(y[i][k-1], start=v): 
+#                         for v_, var in enumerate(y[i][k-1], start=v):
 #                             print("i:")
 #                             print(i)
 #                             print("k:")
