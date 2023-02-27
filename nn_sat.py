@@ -6,7 +6,7 @@ from array import *
 C = 1
 
 # max weight
-max = 5
+max = 3
 
 # size of dataset
 n = 3
@@ -123,12 +123,7 @@ generate_simulation_variables(C, m, k, max)
 
 formula = CNF()
 
-# print("w:", w_str)
-# print("i:", i_str)
-
 # create clauses relating dataset variables with gate input variables (should be equivalent)
-
-
 def relate_w_i(c, m, k):
 
     for a in range(c):
@@ -140,12 +135,6 @@ def relate_w_i(c, m, k):
                 formula.append([-i_str[i_key], w_str[w_key]])
 
 relate_w_i(C, m, k)
-# print(formula.clauses)
-
-
-# print("w:", w_str)
-# print("o:", o_str)
-
 
 # create clauses relating dataset labels with output variables (they should be equivalent)
 def relate_w_o(c, m):
@@ -158,16 +147,6 @@ def relate_w_o(c, m):
 
 
 relate_w_o(C, m)
-
-# print(formula.clauses)
-
-# print("y", y_str)
-# print()
-# print("omega", omega_str)
-# print()
-# print("o", o_str)
-# print()
-
 
 # create clauses relating output variables with weight variables and simulations variables
 def relate_y_omega_o(c, m, max):
@@ -185,52 +164,78 @@ def relate_y_omega_o(c, m, max):
 
 
 relate_y_omega_o(C, m, max)
-# print(formula.clauses)
-# print("Y:", y_str)
-# print()
 
+# def uniqueness_y(c, m, k, max):
+#     for a in range(c):
+#         for i in range(m):
+#             for b in range(k):
+#                 for v in range(max):
+#                     for v_prime in range(max):
+#                         if v != v_prime:
+#                             y_key_1 = "y" + str(a + 1) + \
+#                                 str(i + 1) + str(b+1) + str(v)
+#                             y_key_2 = "y" + \
+#                                 str(a + 1) + str(i + 1) + \
+#                                 str(b+1) + str(v_prime)
+#                             formula2.append([y_str[y_key_1], -y_str[y_key_2]])
 
-def uniqueness_y(c, m, k, max):
+def uniqueness_y_2(c, m, k, max):
     for a in range(c):
         for i in range(m):
             for b in range(k):
+                clause = []
                 for v in range(max):
-                    for v_prime in range(max):
-                        if v != v_prime:
-                            y_key_1 = "y" + str(a + 1) + \
+                    y_key_1 = "y" + str(a + 1) + \
                                 str(i + 1) + str(b+1) + str(v)
-                            y_key_2 = "y" + \
-                                str(a + 1) + str(i + 1) + \
-                                str(b+1) + str(v_prime)
-                            formula.append([y_str[y_key_1], -y_str[y_key_2]])
+                    clause.append(y_str[y_key_1])
+                    for v_prime in range(v+1,max):            
+                        y_key_2 = "y" + \
+                            str(a + 1) + str(i + 1) + \
+                            str(b+1) + str(v_prime)
+                        formula.append([-y_str[y_key_1], -y_str[y_key_2]])
+
+                formula.append(clause)
 
 
-uniqueness_y(C, m, k, max)
+uniqueness_y_2(C, m, k, max)
 
-# print(formula.clauses)
+# def uniqueness_omega(c, max):
+#     for a in range(c):
+#         for v in range(max):
+#             for v_prime in range(max):
+#                 if v != v_prime:
+#                     omega_key_1 = "omega" + str(a + 1) + str(v)
+#                     omega_key_2 = "omega" + str(a + 1) + str(v_prime)
+#                     formula.append(
+#                         [omega_str[omega_key_1], -omega_str[omega_key_2]])
+                    
 
-print("Omega:", omega_str)
-
-
-def uniqueness_omega(c, max):
+def uniqueness_omega_2(c, max):
     for a in range(c):
+        clause = []
         for v in range(max):
-            for v_prime in range(max):
-                if v != v_prime:
-                    omega_key_1 = "omega" + str(a + 1) + str(v)
-                    omega_key_2 = "omega" + str(a + 1) + str(v_prime)
-                    formula.append(
-                        [omega_str[omega_key_1], -omega_str[omega_key_2]])
+            omega_key_1 = "omega" + str(a + 1) + str(v)
+            clause.append(omega_str[omega_key_1])
+            for v_prime in range(v+1, max):
+                omega_key_2 = "omega" + str(a + 1) + str(v_prime)
+                formula.append(
+                    [-omega_str[omega_key_1], -omega_str[omega_key_2]])
+        formula.append(clause)
 
 
-uniqueness_omega(C, max)
+uniqueness_omega_2(C, max)
 
-# # print(formula.clauses)
-
-# print("Y: ", y_str)
-# print()
-# print("I: ", i_str)
-# print()
+# relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1
+def relate_partial_sums_inputs_0(c, m):
+    for a in range(c):
+        for i in range(m):
+            i_key = "i" + str(a+1) + str(i + 1) + str(1)
+            y_key = "y" + str(a + 1) + \
+                            str(i + 1) + str(1) + str(1)
+            formula.append([i_str[i_key], -y_str[y_key]])
+            formula.append([-i_str[i_key], y_str[y_key]])
+            
+relate_partial_sums_inputs_0(C, max)
 
 
 def relate_partial_sums_inputs_1(c, m, k, max):
@@ -249,20 +254,13 @@ def relate_partial_sums_inputs_1(c, m, k, max):
 
 relate_partial_sums_inputs_1(C, m, k, max)
 
-# print(formula.clauses)
-
-
-# print("Y: ", y_str)
-# print()
-# print("I: ", i_str)
-# print()
-
-
 def relate_partial_sums_inputs_2(c, m, k, max):
     for a in range(c):
         for i in range(m):
             for b in range(k):
                 for v in range(max):
+                    # print("b:", b)
+                    # print("k", k-1)
                     if b != k-1:
                         y_key_1 = "y" + str(a + 1) + \
                             str(i + 1) + str(b+1) + str(v)
@@ -270,17 +268,55 @@ def relate_partial_sums_inputs_2(c, m, k, max):
                             str(a + 1) + str(i + 1) + \
                             str(b+2) + str(v)
                         i_key = "i" + str(a+1) + str(i + 1) + str(b+2)
-                        formula.append([y_str[y_key_1], -i_str[i_key], y_str[y_key_2]])
+                        print("Appending clause: ", [y_key_1, i_key, y_key_2])
+                        print()
+                        formula.append([-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
 
 relate_partial_sums_inputs_2(C, m, k, max)
 
-# print(formula.clauses)
+
+dataset = [
+    [1, 1, 1],
+    [0, 0, 0],
+    [0, 1, 0]
+]
+
+assumptions = []
+
+def fit_data():
+    for i in range(m):
+        for j in range(n):
+            s = "w" + str(i+1) + str(j)
+            if dataset[i][j] < 1:
+                assumptions.append(w_str[s] * -1)
+            else:
+                assumptions.append(w_str[s])
+
+
+fit_data() 
 
 g = Glucose3()
 
 g.append_formula(formula)
 
-print(g.solve())
+print(formula.clauses)
+print()
+
+solution = g.solve(assumptions=assumptions)
+
+print(w_str)
+print()
+print(i_str)
+print()
+print(o_str)
+print()
+print(omega_str)
+print()
+print(y_str)
+print()
+
+
+print(solution)
 
 print(g.get_model())
 
