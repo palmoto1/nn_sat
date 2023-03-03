@@ -15,16 +15,21 @@ with open(file_path, "r") as file:
             for s in row:
                 a.append(int(s))   
             dataset.append(a)
+
             
 # number of neurons
 C = int(header[0])
+print("C: ", C)
 
 # maximum weight
 max = int(header[1])
+print("max: ", max)
 
 # size of dataset
 n = len(dataset[0])
+print("n: ", n)
 m = len(dataset)
+print("m: ", m)
 
 # gate input
 k = n - 1
@@ -247,7 +252,7 @@ def relate_partial_sums_inputs_0(c, m):
             formula.append([i_str[i_key], -y_str[y_key]])
             formula.append([-i_str[i_key], y_str[y_key]])
 
-relate_partial_sums_inputs_0(C, max)
+relate_partial_sums_inputs_0(C, m)
 
 # creates clauses that relates the partial sums with the inputs
 def relate_partial_sums_inputs_1(c, m, k, max):
