@@ -326,6 +326,15 @@ def translate_model(model):
 
     return translation
 
+def get_accepted_weight(translated_model):
+    for entry in translated_model:
+        if entry.startswith("omega"):
+            return entry
+        
+    return "not found"
+            
+        
+
 
 fit_data()
 
@@ -337,6 +346,7 @@ g.append_formula(formula)
 
 solution = g.solve(assumptions=assumptions)
 model = g.get_model()
+translated_model = translate_model(model)
 
 print(w_str)
 print()
@@ -353,4 +363,5 @@ print()
 print(solution)
 print(model)
 print()
-print(translate_model(model))
+print(translated_model)
+print(get_accepted_weight(translated_model))
