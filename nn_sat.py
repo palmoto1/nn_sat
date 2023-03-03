@@ -259,8 +259,6 @@ def relate_partial_sums_inputs_2(c, m, k, max):
         for i in range(m):
             for b in range(k):
                 for v in range(max):
-                    # print("b:", b)
-                    # print("k", k-1)
                     if b != k-1:
                         y_key_1 = "y" + str(a + 1) + \
                             str(i + 1) + str(b+1) + str(v)
@@ -268,8 +266,6 @@ def relate_partial_sums_inputs_2(c, m, k, max):
                             str(a + 1) + str(i + 1) + \
                             str(b+2) + str(v)
                         i_key = "i" + str(a+1) + str(i + 1) + str(b+2)
-                        print("Appending clause: ", [y_key_1, i_key, y_key_2])
-                        print()
                         formula.append([-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
 
 relate_partial_sums_inputs_2(C, m, k, max)
@@ -291,6 +287,26 @@ def fit_data():
                 assumptions.append(w_str[s] * -1)
             else:
                 assumptions.append(w_str[s])
+                
+def merge_dicts(*dicts):
+    result = {}
+    for dict in dicts:
+        result = result | dict
+        
+    return result
+                
+def translate_model(model):
+    dict = merge_dicts(w_digit, o_digit, i_digit, omega_digit, y_digit)
+    translation = []
+    for i in model:
+        if i < 0:
+            s = '-' + dict[i * -1]
+            translation.append(s)
+        else:
+            translation.append(dict[i])
+        
+    return translation
+        
 
 
 fit_data() 
@@ -317,7 +333,9 @@ print()
 
 
 print(solution)
+model = g.get_model()
+print(model)
+print(translate_model(model))
 
-print(g.get_model())
 
 
