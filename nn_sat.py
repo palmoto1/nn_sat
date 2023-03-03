@@ -1,17 +1,30 @@
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
 from array import *
+import csv
 
+
+file_path = "./test.csv"
+dataset = []
+
+with open(file_path, "r") as file:
+        csvreader = csv.reader(file)
+        header = next(csvreader)
+        for row in csvreader:
+            a = []
+            for s in row:
+                a.append(int(s))   
+            dataset.append(a)
+            
 # number of neurons
-C = 1
+C = int(header[0])
 
-# max weight
-max = 3
+# maximum weight
+max = int(header[1])
 
 # size of dataset
-n = 3
-m = 3
-
+n = len(dataset[0])
+m = len(dataset)
 
 # gate input
 k = n - 1
@@ -134,6 +147,7 @@ def relate_w_i(c, m, k):
                 formula.append([i_str[i_key], -w_str[w_key]])
                 formula.append([-i_str[i_key], w_str[w_key]])
 
+
 relate_w_i(C, m, k)
 
 # create clauses relating dataset labels with output variables (they should be equivalent)
@@ -179,6 +193,7 @@ relate_y_omega_o(C, m, max)
 #                                 str(b+1) + str(v_prime)
 #                             formula2.append([y_str[y_key_1], -y_str[y_key_2]])
 
+
 def uniqueness_y_2(c, m, k, max):
     for a in range(c):
         for i in range(m):
@@ -186,9 +201,9 @@ def uniqueness_y_2(c, m, k, max):
                 clause = []
                 for v in range(max):
                     y_key_1 = "y" + str(a + 1) + \
-                                str(i + 1) + str(b+1) + str(v)
+                        str(i + 1) + str(b+1) + str(v)
                     clause.append(y_str[y_key_1])
-                    for v_prime in range(v+1,max):            
+                    for v_prime in range(v+1, max):
                         y_key_2 = "y" + \
                             str(a + 1) + str(i + 1) + \
                             str(b+1) + str(v_prime)
@@ -208,7 +223,7 @@ uniqueness_y_2(C, m, k, max)
 #                     omega_key_2 = "omega" + str(a + 1) + str(v_prime)
 #                     formula.append(
 #                         [omega_str[omega_key_1], -omega_str[omega_key_2]])
-                    
+
 
 def uniqueness_omega_2(c, max):
     for a in range(c):
@@ -226,15 +241,18 @@ def uniqueness_omega_2(c, max):
 uniqueness_omega_2(C, max)
 
 # relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1
+
+
 def relate_partial_sums_inputs_0(c, m):
     for a in range(c):
         for i in range(m):
             i_key = "i" + str(a+1) + str(i + 1) + str(1)
             y_key = "y" + str(a + 1) + \
-                            str(i + 1) + str(1) + str(1)
+                str(i + 1) + str(1) + str(1)
             formula.append([i_str[i_key], -y_str[y_key]])
             formula.append([-i_str[i_key], y_str[y_key]])
-            
+
+
 relate_partial_sums_inputs_0(C, max)
 
 
@@ -248,11 +266,14 @@ def relate_partial_sums_inputs_1(c, m, k, max):
                             str(i + 1) + str(b+1) + str(v)
                         y_key_2 = "y" + \
                             str(a + 1) + str(i + 1) + \
-                            str(b+2) + str(v +1)
+                            str(b+2) + str(v + 1)
                         i_key = "i" + str(a+1) + str(i + 1) + str(b+2)
-                        formula.append([-y_str[y_key_1], -i_str[i_key], y_str[y_key_2]])
+                        formula.append(
+                            [-y_str[y_key_1], -i_str[i_key], y_str[y_key_2]])
+
 
 relate_partial_sums_inputs_1(C, m, k, max)
+
 
 def relate_partial_sums_inputs_2(c, m, k, max):
     for a in range(c):
@@ -266,18 +287,21 @@ def relate_partial_sums_inputs_2(c, m, k, max):
                             str(a + 1) + str(i + 1) + \
                             str(b+2) + str(v)
                         i_key = "i" + str(a+1) + str(i + 1) + str(b+2)
-                        formula.append([-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
+                        formula.append(
+                            [-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
+
 
 relate_partial_sums_inputs_2(C, m, k, max)
 
 
-dataset = [
-    [1, 1, 1],
-    [0, 0, 0],
-    [0, 1, 0]
-]
+# dataset = [
+#     [1, 1, 1],
+#     [0, 0, 0],
+#     [0, 1, 0]
+# ]
 
 assumptions = []
+
 
 def fit_data():
     for i in range(m):
@@ -287,14 +311,16 @@ def fit_data():
                 assumptions.append(w_str[s] * -1)
             else:
                 assumptions.append(w_str[s])
-                
+
+
 def merge_dicts(*dicts):
     result = {}
     for dict in dicts:
         result = result | dict
-        
+
     return result
-                
+
+
 def translate_model(model):
     dict = merge_dicts(w_digit, o_digit, i_digit, omega_digit, y_digit)
     translation = []
@@ -304,12 +330,11 @@ def translate_model(model):
             translation.append(s)
         else:
             translation.append(dict[i])
-        
+
     return translation
-        
 
 
-fit_data() 
+fit_data()
 
 g = Glucose3()
 
@@ -336,6 +361,3 @@ print(solution)
 model = g.get_model()
 print(model)
 print(translate_model(model))
-
-
-
