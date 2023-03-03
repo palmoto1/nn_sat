@@ -29,7 +29,6 @@ m = len(dataset)
 # gate input
 k = n - 1
 
-
 # literal counter
 count = 1
 
@@ -48,7 +47,6 @@ omega_digit = {}
 # gate input dicts
 i_str = {}
 i_digit = {}
-
 
 # simulation variable dicts
 y_str = {}
@@ -237,12 +235,9 @@ def uniqueness_omega_2(c, max):
                     [-omega_str[omega_key_1], -omega_str[omega_key_2]])
         formula.append(clause)
 
-
 uniqueness_omega_2(C, max)
 
-# relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1
-
-
+# creates clauses that relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1
 def relate_partial_sums_inputs_0(c, m):
     for a in range(c):
         for i in range(m):
@@ -252,10 +247,9 @@ def relate_partial_sums_inputs_0(c, m):
             formula.append([i_str[i_key], -y_str[y_key]])
             formula.append([-i_str[i_key], y_str[y_key]])
 
-
 relate_partial_sums_inputs_0(C, max)
 
-
+# creates clauses that relates the partial sums with the inputs
 def relate_partial_sums_inputs_1(c, m, k, max):
     for a in range(c):
         for i in range(m):
@@ -274,7 +268,7 @@ def relate_partial_sums_inputs_1(c, m, k, max):
 
 relate_partial_sums_inputs_1(C, m, k, max)
 
-
+# creates clauses that relates the partial sums with the inputs
 def relate_partial_sums_inputs_2(c, m, k, max):
     for a in range(c):
         for i in range(m):
@@ -294,14 +288,8 @@ def relate_partial_sums_inputs_2(c, m, k, max):
 relate_partial_sums_inputs_2(C, m, k, max)
 
 
-# dataset = [
-#     [1, 1, 1],
-#     [0, 0, 0],
-#     [0, 1, 0]
-# ]
 
 assumptions = []
-
 
 def fit_data():
     for i in range(m):
@@ -337,13 +325,13 @@ def translate_model(model):
 fit_data()
 
 g = Glucose3()
-
 g.append_formula(formula)
 
-print(formula.clauses)
-print()
+#print(formula.clauses)
+#print()
 
 solution = g.solve(assumptions=assumptions)
+model = g.get_model()
 
 print(w_str)
 print()
@@ -358,6 +346,6 @@ print()
 
 
 print(solution)
-model = g.get_model()
 print(model)
+print()
 print(translate_model(model))
