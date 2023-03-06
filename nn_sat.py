@@ -5,8 +5,8 @@ import csv
 
 
 formula = CNF()
-g = Glucose3()
-file_path = "./test.csv"
+solver = Glucose3()
+file_path = "./dataset.csv"
 
 dataset = []
 assumptions = []
@@ -326,6 +326,7 @@ def get_accepted_weight(translated_model):
 
 
 def reset():
+    global solver
     global formula
     global dataset
     global assumptions
@@ -347,6 +348,10 @@ def reset():
     global y_digit  
     
     formula = CNF()
+
+    solver.delete()
+    solver = Glucose3()
+
     dataset = []
     assumptions = []
 
@@ -388,9 +393,9 @@ with open(file_path, "r") as file:
 
             fit_data()
 
-            g.append_formula(formula)
-            solution = g.solve(assumptions=assumptions)
-            model = g.get_model()
+            solver.append_formula(formula)
+            solution = solver.solve(assumptions=assumptions)
+            model = solver.get_model()
             print(model)
             translated_model = translate_model(model)
 
