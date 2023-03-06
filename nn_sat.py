@@ -4,35 +4,25 @@ from array import *
 import csv
 
 
+formula = CNF()
+g = Glucose3()
 file_path = "./test.csv"
+
 dataset = []
+assumptions = []
 
-with open(file_path, "r") as file:
-        csvreader = csv.reader(file)
-        header = next(csvreader)
-        for row in csvreader:
-            a = []
-            for s in row:
-                a.append(int(s))   
-            dataset.append(a)
-
-            
 # number of neurons
-C = int(header[0])
-print("C: ", C)
+C = 0
 
 # maximum weight
-max = int(header[1])
-print("max: ", max)
+max = 0
 
 # size of dataset
-n = len(dataset[0])
-print("n: ", n)
-m = len(dataset)
-print("m: ", m)
+n = 0
+m = 0
 
 # gate input
-k = n - 1
+k = 0
 
 # literal counter
 count = 1
@@ -58,7 +48,11 @@ y_str = {}
 y_digit = {}
 
 
-def generate_dataset(m, n):
+            
+
+
+
+def generate_input_variables(m, n):
     global w_str
     global w_digit
     global count
@@ -129,15 +123,14 @@ def generate_simulation_variables(c, m, k, max):
                     y_digit[count] = s
                     count += 1
 
+def generate_variables():
+    generate_input_variables(m, n)
+    generate_outputs(C, m)
+    generate_weights(C, max)
+    generate_gate_inputs(C, m, k)
+    generate_simulation_variables(C, m, k, max)
 
-generate_dataset(m, n)
-generate_outputs(C, m)
-generate_weights(C, max)
-generate_gate_inputs(C, m, k)
-generate_simulation_variables(C, m, k, max)
 
-
-formula = CNF()
 
 # create clauses relating dataset variables with gate input variables (should be equivalent)
 def relate_w_i(c, m, k):
@@ -151,8 +144,6 @@ def relate_w_i(c, m, k):
                 formula.append([-i_str[i_key], w_str[w_key]])
 
 
-relate_w_i(C, m, k)
-
 # create clauses relating dataset labels with output variables (they should be equivalent)
 def relate_w_o(c, m):
     for a in range(c):
@@ -162,8 +153,6 @@ def relate_w_o(c, m):
             formula.append([w_str[w_key], -o_str[o_key]])
             formula.append([-w_str[w_key], o_str[o_key]])
 
-
-relate_w_o(C, m)
 
 # create clauses relating output variables with weight variables and simulations variables
 def relate_y_omega_o(c, m, max):
@@ -180,8 +169,6 @@ def relate_y_omega_o(c, m, max):
                             [-y_str[y_key], -omega_str[omega_key], o_str[o_key]])
 
 
-relate_y_omega_o(C, m, max)
-
 # def uniqueness_y(c, m, k, max):
 #     for a in range(c):
 #         for i in range(m):
@@ -197,7 +184,7 @@ relate_y_omega_o(C, m, max)
 #                             formula2.append([y_str[y_key_1], -y_str[y_key_2]])
 
 
-def uniqueness_y_2(c, m, k, max):
+def uniqueness_y(c, m, k, max):
     for a in range(c):
         for i in range(m):
             for b in range(k):
@@ -215,7 +202,6 @@ def uniqueness_y_2(c, m, k, max):
                 formula.append(clause)
 
 
-uniqueness_y_2(C, m, k, max)
 
 # def uniqueness_omega(c, max):
 #     for a in range(c):
@@ -228,7 +214,7 @@ uniqueness_y_2(C, m, k, max)
 #                         [omega_str[omega_key_1], -omega_str[omega_key_2]])
 
 
-def uniqueness_omega_2(c, max):
+def uniqueness_omega(c, max):
     for a in range(c):
         clause = []
         for v in range(max):
@@ -240,19 +226,21 @@ def uniqueness_omega_2(c, max):
                     [-omega_str[omega_key_1], -omega_str[omega_key_2]])
         formula.append(clause)
 
-uniqueness_omega_2(C, max)
 
 # creates clauses that relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1
 def relate_partial_sums_inputs_0(c, m):
     for a in range(c):
         for i in range(m):
             i_key = "i" + str(a+1) + str(i + 1) + str(1)
-            y_key = "y" + str(a + 1) + \
+            y_key_0 = "y" + str(a + 1) + \
+                str(i + 1) + str(1) + str(0)
+            y_key_1 = "y" + str(a + 1) + \
                 str(i + 1) + str(1) + str(1)
-            formula.append([i_str[i_key], -y_str[y_key]])
-            formula.append([-i_str[i_key], y_str[y_key]])
+            formula.append([-i_str[i_key], -y_str[y_key_0]])
+            formula.append([i_str[i_key], y_str[y_key_0]])
+            formula.append([i_str[i_key], -y_str[y_key_1]])
+            formula.append([-i_str[i_key], y_str[y_key_1]])
 
-relate_partial_sums_inputs_0(C, m)
 
 # creates clauses that relates the partial sums with the inputs
 def relate_partial_sums_inputs_1(c, m, k, max):
@@ -271,8 +259,6 @@ def relate_partial_sums_inputs_1(c, m, k, max):
                             [-y_str[y_key_1], -i_str[i_key], y_str[y_key_2]])
 
 
-relate_partial_sums_inputs_1(C, m, k, max)
-
 # creates clauses that relates the partial sums with the inputs
 def relate_partial_sums_inputs_2(c, m, k, max):
     for a in range(c):
@@ -290,11 +276,16 @@ def relate_partial_sums_inputs_2(c, m, k, max):
                             [-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
 
 
-relate_partial_sums_inputs_2(C, m, k, max)
+def generate_formula():
+    relate_w_i(C, m, k)
+    relate_w_o(C, m)
+    relate_y_omega_o(C, m, max)
+    uniqueness_y(C, m, k, max)
+    uniqueness_omega(C, max)
+    relate_partial_sums_inputs_0(C, m)
+    relate_partial_sums_inputs_1(C, m, k, max)
+    relate_partial_sums_inputs_2(C, m, k, max)
 
-
-
-assumptions = []
 
 def fit_data():
     for i in range(m):
@@ -332,36 +323,108 @@ def get_accepted_weight(translated_model):
             return entry
         
     return "not found"
-            
-        
 
 
-fit_data()
+def reset():
+    global formula
+    global dataset
+    global assumptions
+    global C
+    global max
+    global n
+    global m
+    global k
+    global count
+    global w_str
+    global w_digit
+    global o_str
+    global o_digit
+    global omega_str
+    global omega_digit
+    global i_str
+    global i_digit
+    global y_str
+    global y_digit  
+    
+    formula = CNF()
+    dataset = []
+    assumptions = []
 
-g = Glucose3()
-g.append_formula(formula)
+    C = 0
+    max = 0
+    n = 0
+    m = 0
+    k = 0
+    count = 1
 
-#print(formula.clauses)
-#print()
+    w_str = {}
+    w_digit = {}
 
-solution = g.solve(assumptions=assumptions)
-model = g.get_model()
-translated_model = translate_model(model)
+    o_str = {}
+    o_digit = {}
 
-print(w_str)
-print()
-print(i_str)
-print()
-print(o_str)
-print()
-print(omega_str)
-print()
-print(y_str)
-print()
+    omega_str = {}
+    omega_digit = {}
+
+    i_str = {}
+    i_digit = {}
+
+    y_str = {}
+    y_digit = {}
 
 
-print(solution)
-print(model)
-print()
-print(translated_model)
-print(get_accepted_weight(translated_model))
+#loopen funkar ej helt
+with open(file_path, "r") as file:
+    csvreader = csv.reader(file)
+        #header = next(csvreader)
+    for row in csvreader:
+        if row[0] == 'end':
+            m = len(dataset)
+            n = len(dataset[0])
+            k = n -1
+
+            generate_variables()
+            generate_formula()
+
+            fit_data()
+
+            g.append_formula(formula)
+            solution = g.solve(assumptions=assumptions)
+            model = g.get_model()
+            print(model)
+            translated_model = translate_model(model)
+
+            print("Model: ", translated_model)
+            print("Weight: ", get_accepted_weight(translated_model))
+
+            reset()
+        elif row[0] == 'header':
+            C = int(row[1])
+            max = int(row[2])
+        else:
+            a = []
+            for s in row:
+                a.append(int(s))   
+            dataset.append(a)
+                
+
+
+
+
+# print(w_str)
+# print()
+# print(i_str)
+# print()
+# print(o_str)
+# print()
+# print(omega_str)
+# print()
+# print(y_str)
+# print()
+
+
+# print(solution)
+# print(model)
+# print()
+# print(translated_model)
+# print(get_accepted_weight(translated_model))

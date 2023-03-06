@@ -21,7 +21,7 @@ def generate_dataset(m, n, threshold):
     return result
 
 
-with open(join(dirname(abspath(__file__)), "dataset.txt"), 'w', encoding='UTF8', newline='') as f:
+with open(join(dirname(abspath(__file__)), "dataset.csv"), 'w', encoding='UTF8', newline='') as f:
     writer = csv.writer(f)
     min_inputs = 2
     max_inputs = 10
@@ -30,10 +30,10 @@ with open(join(dirname(abspath(__file__)), "dataset.txt"), 'w', encoding='UTF8',
         C = 1 # currently assuming only 1 neuron
         m = random.randint(min_inputs, max_inputs) # generate a random number of input strings from 2 to 10
         n = random.randint(min_inputs+1, max_inputs) # generate a random number of input bits per string from 2 to 10 + the label
-        max_weigth = n-1 # max value for weight should be the number of bits in an input string
+        max_weigth = n # max value for weight should be the number of bits in an input string
         threshold = random.randint(1, n-1) # minimum of true bits for an input string to be accepted
 
-        header = [C, max_weigth, threshold]
+        header = ['header', C, max_weigth]
         data = generate_dataset(m, n, threshold)
 
         # print(data)
@@ -46,4 +46,4 @@ with open(join(dirname(abspath(__file__)), "dataset.txt"), 'w', encoding='UTF8',
         writer.writerows(data)
 
         # separating datasets
-        writer.writerow([])
+        writer.writerow(['end'])
