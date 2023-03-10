@@ -6,13 +6,19 @@ import csv
 
 formula = CNF()
 solver = Glucose3()
-file_path = "./dataset.csv"
+file_path = "./test.csv"
 
 dataset = []
 assumptions = []
 
 # number of neurons
 C = 0
+
+# depth of netork
+d = 0
+
+# layer size
+l = 0
 
 # maximum weight
 max = 0
@@ -46,10 +52,6 @@ i_digit = {}
 # simulation variable dicts
 y_str = {}
 y_digit = {}
-
-
-            
-
 
 
 def generate_input_variables(m, n):
@@ -123,13 +125,13 @@ def generate_simulation_variables(c, m, k, max):
                     y_digit[count] = s
                     count += 1
 
+# generate all variables
 def generate_variables():
     generate_input_variables(m, n)
     generate_outputs(C, m)
     generate_weights(C, max)
     generate_gate_inputs(C, m, k)
     generate_simulation_variables(C, m, k, max)
-
 
 
 # create clauses relating dataset variables with gate input variables (should be equivalent)
@@ -183,7 +185,7 @@ def relate_y_omega_o(c, m, max):
 #                                 str(b+1) + str(v_prime)
 #                             formula2.append([y_str[y_key_1], -y_str[y_key_2]])
 
-
+# define the uniqueness of simulation variables, i.e. of n variables there can only be one that is true while the rest have to be false
 def uniqueness_y(c, m, k, max):
     for a in range(c):
         for i in range(m):
@@ -213,7 +215,7 @@ def uniqueness_y(c, m, k, max):
 #                     formula.append(
 #                         [omega_str[omega_key_1], -omega_str[omega_key_2]])
 
-
+# define the uniqueness of gate weight variables, just like for the simulation variables
 def uniqueness_omega(c, max):
     for a in range(c):
         clause = []
@@ -287,6 +289,7 @@ def generate_formula():
     relate_partial_sums_inputs_2(C, m, k, max)
 
 
+# create assumptions for the dataset variables
 def fit_data():
     for i in range(m):
         for j in range(n):
@@ -330,12 +333,14 @@ def reset():
     global formula
     global dataset
     global assumptions
+
     global C
     global max
     global n
     global m
     global k
     global count
+    
     global w_str
     global w_digit
     global o_str
@@ -377,43 +382,55 @@ def reset():
     y_str = {}
     y_digit = {}
 
+def main():
+    global solver
+    global formula
+    global dataset
+    global assumptions
 
-#loopen funkar ej helt
-with open(file_path, "r") as file:
-    csvreader = csv.reader(file)
-        #header = next(csvreader)
-    for row in csvreader:
-        if row[0] == 'end':
-            m = len(dataset)
-            n = len(dataset[0])
-            k = n -1
+    global C
+    global max
+    global n
+    global m
+    global k
 
-            generate_variables()
-            generate_formula()
+    with open(file_path, "r") as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row[0] == 'end':
+                m = len(dataset)
+                n = len(dataset[0])
+                k = n -1
 
-            fit_data()
+                generate_variables()
+                generate_formula()
 
-            solver.append_formula(formula)
-            solution = solver.solve(assumptions=assumptions)
-            model = solver.get_model()
-            print(model)
-            translated_model = translate_model(model)
+                fit_data()
 
-            print("Model: ", translated_model)
-            print("Weight: ", get_accepted_weight(translated_model))
+                solver.append_formula(formula)
+                solution = solver.solve(assumptions)
+                model = solver.get_model()
+                print(model)
+                translated_model = translate_model(model)
 
-            reset()
-        elif row[0] == 'header':
-            C = int(row[1])
-            max = int(row[2])
-        else:
-            a = []
-            for s in row:
-                a.append(int(s))   
-            dataset.append(a)
+                print("Model: ", translated_model)
+                print("Weight: ", get_accepted_weight(translated_model))
+
+                reset()
+            elif row[0] == 'header':
+                d = int(row[1])
+                l = int(row[2])
+                C = int(row[1]) * int(row[2]) + 1
+                max = int(row[3])
+            else:
+                a = []
+                for s in row:
+                    a.append(int(s))   
+                dataset.append(a)
                 
 
-
+# execute script
+main()
 
 
 # print(w_str)
