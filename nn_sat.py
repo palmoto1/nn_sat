@@ -194,7 +194,7 @@ def relate_o_and_i(depth, layer_size, m):
             formula.append([-i_str[i_key], o_str[o_key]])
 
 
-# # create clauses relating dataset labels with output variables (they should be equivalent)
+# # create clauses relating dataset labels with output variables of the last gate in the network (they should be equivalent)
 def relate_w_o(depth, m):
     
     for i in range(m):
@@ -203,88 +203,66 @@ def relate_w_o(depth, m):
         formula.append([w_str[w_key], -o_str[o_key]])
         formula.append([-w_str[w_key], o_str[o_key]])
 
+# create clauses relating output variables with weight variables and simulations variables
+def relate_y_omega_o(depth, layer_size, m, max):
+    
+    for i in range(m):
+        for d in range(depth+1):
+            a = k if d == 0 else layer_size # since the first layer has string bits as inputs
+            for l in range(layer_size):
+                t = 1 if d == depth else l + 1 # last layer only has one gate (output layer)
+                for v in range(max):
+                    for v_prime in range(max):
+                        if v_prime >= v:
+                            y_key = "y" + str(i+1) + str(d+1) + str(t) + str(a) + str(v_prime)
+                            o_key = "o" + str(i+1) + str(d + 1) + str(t)
+                            omega_key = "omega" + str(d + 1) + str(t) + str(v)
+                            formula.append(
+                                [-y_str[y_key], -omega_str[omega_key], o_str[o_key]])
+                            
+                if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
+                    break
 
-# # create clauses relating dataset labels with output variables (they should be equivalent)
-# def relate_w_o(c, m):
-#     for a in range(c):
-#         for i in range(m):
-#             w_key = "w" + str(i + 1) + str(0)
-#             o_key = "o" + str(a+1) + str(i + 1)
-#             formula.append([w_str[w_key], -o_str[o_key]])
-#             formula.append([-w_str[w_key], o_str[o_key]])
+# define the uniqueness of simulation variables, i.e. of n variables there can only be one that is true while the rest have to be false
+def uniqueness_y(depth, layer_size, m, k, max):
+    for i in range(m):
+        for d in range(depth + 1):
+            a = k if d == 0 else layer_size # since the first layer has string bits as inputs
+            for l in range(layer_size):    
+                t = 1 if d == depth else l + 1 # last layer only has one gate (output layer)
+                for b in range(a):
+                    clause = []
+                    for v in range(max):
+                        y_key_1 = "y" + str(i + 1) + \
+                            str(d + 1) + str(t) + str(b+1) + str(v)
+                        clause.append(y_str[y_key_1])
+                        for v_prime in range(v+1, max):
+                            y_key_2 = "y" + str(i + 1) + \
+                            str(d + 1) + str(t) + str(b+1) + str(v_prime)
+                            formula.append([-y_str[y_key_1], -y_str[y_key_2]])
 
-
-# # create clauses relating output variables with weight variables and simulations variables
-# def relate_y_omega_o(c, m, max):
-#     for a in range(c):
-#         for i in range(m):
-#             for v in range(max):
-#                 for v_prime in range(max):
-#                     if v_prime >= v:
-#                         y_key = "y" + str(a + 1) + str(i + 1) + \
-#                             str(k) + str(v_prime)
-#                         o_key = "o" + str(a+1) + str(i + 1)
-#                         omega_key = "omega" + str(a + 1) + str(v)
-#                         formula.append(
-#                             [-y_str[y_key], -omega_str[omega_key], o_str[o_key]])
-
-
-# # def uniqueness_y(c, m, k, max):
-# #     for a in range(c):
-# #         for i in range(m):
-# #             for b in range(k):
-# #                 for v in range(max):
-# #                     for v_prime in range(max):
-# #                         if v != v_prime:
-# #                             y_key_1 = "y" + str(a + 1) + \
-# #                                 str(i + 1) + str(b+1) + str(v)
-# #                             y_key_2 = "y" + \
-# #                                 str(a + 1) + str(i + 1) + \
-# #                                 str(b+1) + str(v_prime)
-# #                             formula2.append([y_str[y_key_1], -y_str[y_key_2]])
-
-# # define the uniqueness of simulation variables, i.e. of n variables there can only be one that is true while the rest have to be false
-# def uniqueness_y(c, m, k, max):
-#     for a in range(c):
-#         for i in range(m):
-#             for b in range(k):
-#                 clause = []
-#                 for v in range(max):
-#                     y_key_1 = "y" + str(a + 1) + \
-#                         str(i + 1) + str(b+1) + str(v)
-#                     clause.append(y_str[y_key_1])
-#                     for v_prime in range(v+1, max):
-#                         y_key_2 = "y" + \
-#                             str(a + 1) + str(i + 1) + \
-#                             str(b+1) + str(v_prime)
-#                         formula.append([-y_str[y_key_1], -y_str[y_key_2]])
-
-#                 formula.append(clause)
+                    formula.append(clause)
+                if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
+                    break
 
 
+# define the uniqueness of gate weight variables, just like for the simulation variables
+def uniqueness_omega(depth, layer_size, max):
+    for d in range(depth + 1):
+        for l in range(layer_size):    
+            t = 1 if d == depth else l + 1 # last layer only has one gate (output layer)
+            clause = []
+            for v in range(max):
+                omega_key_1 = "omega" + str(d + 1) + str(t) + str(v)
+                clause.append(omega_str[omega_key_1])
+                for v_prime in range(v+1, max):
+                    omega_key_2 = "omega" + str(d + 1) + str(t) + str(v_prime)
+                    formula.append(
+                    [-omega_str[omega_key_1], -omega_str[omega_key_2]])
 
-# # def uniqueness_omega(c, max):
-# #     for a in range(c):
-# #         for v in range(max):
-# #             for v_prime in range(max):
-# #                 if v != v_prime:
-# #                     omega_key_1 = "omega" + str(a + 1) + str(v)
-# #                     omega_key_2 = "omega" + str(a + 1) + str(v_prime)
-# #                     formula.append(
-# #                         [omega_str[omega_key_1], -omega_str[omega_key_2]])
-
-# # define the uniqueness of gate weight variables, just like for the simulation variables
-# def uniqueness_omega(c, max):
-#     for a in range(c):
-#         clause = []
-#         for v in range(max):
-#             omega_key_1 = "omega" + str(a + 1) + str(v)
-#             clause.append(omega_str[omega_key_1])
-#             for v_prime in range(v+1, max):
-#                 omega_key_2 = "omega" + str(a + 1) + str(v_prime)
-#                 formula.append(
-#                     [-omega_str[omega_key_1], -omega_str[omega_key_2]])
-#         formula.append(clause)
+            formula.append(clause)
+            if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
+                break
 
 
 # # creates clauses that relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1
@@ -339,10 +317,10 @@ def relate_w_o(depth, m):
 def generate_formula():
     #relate_w_i(l, m, k)
     #relate_o_and_i(d, l, m)
-    relate_w_o(d, m)
-    # relate_y_omega_o(C, m, max)
-    # uniqueness_y(C, m, k, max)
-    # uniqueness_omega(C, max)
+    #relate_w_o(d, m)
+    #relate_y_omega_o(d, l, m, max)
+     #uniqueness_y(d, l, m, k, max)
+     uniqueness_omega(d, l, max)
     # relate_partial_sums_inputs_0(C, m)
     # relate_partial_sums_inputs_1(C, m, k, max)
     # relate_partial_sums_inputs_2(C, m, k, max)
@@ -465,11 +443,12 @@ def main():
                 k = n -1
 
                 generate_variables()
-                print(w_str)
-                print(o_str)
-                # print(omega_str)
+                #print(w_str)
+                #print(o_str)
+                print(omega_str)
                 #print(i_str)
                 #print(y_str)
+                print()
                 generate_formula()
 
                 # fit_data()
