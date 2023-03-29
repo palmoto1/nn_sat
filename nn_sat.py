@@ -28,7 +28,7 @@ max = 0
 n = 0
 m = 0
 
-# gate input
+# no of bits in a string
 k = 0
 
 # literal counter
@@ -124,6 +124,7 @@ def generate_gate_inputs(depth, layer_size, m, k):
                     i_str[s] = count
                     i_digit[count] = s
                     count += 1
+        # last gate (final output)
         for b in range(layer_size):
             s = "i" + str(i+1) + str(depth+1) + str(1) + str(b+1)            
             i_str[s] = count
@@ -131,21 +132,28 @@ def generate_gate_inputs(depth, layer_size, m, k):
             count += 1
     
 
+def generate_simulation_variables(depth, layer_size, m, k, max):
+    global y_str
+    global y_digit
+    global count
 
-
-# def generate_simulation_variables(c, m, k, max):
-#     global y_str
-#     global y_digit
-#     global count
-
-#     for a in range(c):
-#         for i in range(m):
-#             for b in range(k):
-#                 for v in range(max):
-#                     s = "y" + str(a+1) + str(i+1) + str(b+1) + str(v)
-#                     y_str[s] = count
-#                     y_digit[count] = s
-#                     count += 1
+    for i in range(m):
+        for d in range(depth):
+            for l in range(layer_size):
+                gate_inputs = range(k) if d == 0 else range(layer_size) # every gate in first layer should have k dataset bits as inputs 
+                for b in gate_inputs:
+                    for v in range(max):
+                        s = "y" + str(i+1) + str(d+1) + str(l+1) + str(b+1) + str(v)
+                        y_str[s] = count
+                        y_digit[count] = s
+                        count += 1
+        # last gate (final output)
+        for b in range(layer_size):
+            for v in range(max):
+                        s = "y" + str(i+1) + str(depth+1) + str(1) + str(b+1) + str(v)
+                        y_str[s] = count
+                        y_digit[count] = s
+                        count += 1
 
 # generate all variables
 def generate_variables():
@@ -153,19 +161,47 @@ def generate_variables():
     generate_outputs(m, d, l)
     generate_weights(d, l, max)
     generate_gate_inputs(d, l, m, k)
-    # generate_simulation_variables(C, m, k, max)
+    generate_simulation_variables(d, l, m, k, max)
 
 
-# create clauses relating dataset variables with gate input variables (should be equivalent)
-# def relate_w_i(c, m, k):
+# create clauses relating dataset variables with gate input variables of the first layer (should be equivalent)
+def relate_w_i(layer_size, m, k):
 
-#     for a in range(c):
-#         for i in range(m):
-#             for b in range(k):
-#                 w_key = "w" + str(i + 1) + str(b+1)
-#                 i_key = "i" + str(a+1) + str(i + 1) + str(b+1)
-#                 formula.append([i_str[i_key], -w_str[w_key]])
-#                 formula.append([-i_str[i_key], w_str[w_key]])
+    for i in range(m):
+        for l in range(layer_size):
+            for b in range(k):
+                w_key = "w" + str(i + 1) + str(b+1)
+                i_key = "i" + str(i+1) + str(1) +  str(l+1) + str(b+1)
+                formula.append([i_str[i_key], -w_str[w_key]])
+                formula.append([-i_str[i_key], w_str[w_key]])
+
+# create clauses relating gate output variables with gate input variables of the following layer (should be equivalent)
+def relate_o_and_i(depth, layer_size, m):
+
+    for i in range(m):
+        for d in range(depth):
+            if (d != 0):
+                for l in range(layer_size):
+                    for b in range(layer_size):
+                        i_key = "i" + str(i+1) + str(d+1) + str(l+1) + str(b+1)
+                        o_key = "o" + str(i + 1) + str(d) + str(b+1)
+                        formula.append([i_str[i_key], -o_str[o_key]])
+                        formula.append([-i_str[i_key], o_str[o_key]])
+        for b in range(layer_size):
+            i_key = "i" + str(i+1) + str(depth+1) + str(1) + str(b+1)
+            o_key = "o" + str(i + 1) + str(depth) + str(b+1)
+            formula.append([i_str[i_key], -o_str[o_key]])
+            formula.append([-i_str[i_key], o_str[o_key]])
+
+
+# # create clauses relating dataset labels with output variables (they should be equivalent)
+def relate_w_o(depth, m):
+    
+    for i in range(m):
+        w_key = "w" + str(i + 1) + str(0)
+        o_key = "o" + str(i+1) + str(depth+1) + str(1)
+        formula.append([w_str[w_key], -o_str[o_key]])
+        formula.append([-w_str[w_key], o_str[o_key]])
 
 
 # # create clauses relating dataset labels with output variables (they should be equivalent)
@@ -300,15 +336,16 @@ def generate_variables():
 #                             [-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
 
 
-# def generate_formula():
-#     relate_w_i(C, m, k)
-#     relate_w_o(C, m)
-#     relate_y_omega_o(C, m, max)
-#     uniqueness_y(C, m, k, max)
-#     uniqueness_omega(C, max)
-#     relate_partial_sums_inputs_0(C, m)
-#     relate_partial_sums_inputs_1(C, m, k, max)
-#     relate_partial_sums_inputs_2(C, m, k, max)
+def generate_formula():
+    #relate_w_i(l, m, k)
+    #relate_o_and_i(d, l, m)
+    relate_w_o(d, m)
+    # relate_y_omega_o(C, m, max)
+    # uniqueness_y(C, m, k, max)
+    # uniqueness_omega(C, max)
+    # relate_partial_sums_inputs_0(C, m)
+    # relate_partial_sums_inputs_1(C, m, k, max)
+    # relate_partial_sums_inputs_2(C, m, k, max)
 
 
 # # create assumptions for the dataset variables
@@ -428,13 +465,15 @@ def main():
                 k = n -1
 
                 generate_variables()
-                # print(w_str)
-                # print(o_str)
+                print(w_str)
+                print(o_str)
                 # print(omega_str)
-                print(i_str)
-                # generate_formula()
+                #print(i_str)
+                #print(y_str)
+                generate_formula()
 
                 # fit_data()
+                print(formula.clauses)
 
                 # solver.append_formula(formula)
                 # solution = solver.solve(assumptions)
