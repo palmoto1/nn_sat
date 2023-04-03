@@ -176,10 +176,10 @@ def relate_w_i(layer_size, m, k):
                 formula.append([-i_str[i_key], w_str[w_key]])
 
 # create clauses relating gate output variables with gate input variables of the following layer (should be equivalent)
-def relate_o_and_i(depth, layer_size, m):
+def relate_o_i(depth, layer_size, m):
 
     for i in range(m):
-        for d in range(depth):
+        for d in range(depth + 1):
             if (d != 0):
                 for l in range(layer_size):
                     for b in range(layer_size):
@@ -187,11 +187,9 @@ def relate_o_and_i(depth, layer_size, m):
                         o_key = "o" + str(i + 1) + str(d) + str(b+1)
                         formula.append([i_str[i_key], -o_str[o_key]])
                         formula.append([-i_str[i_key], o_str[o_key]])
-        for b in range(layer_size):
-            i_key = "i" + str(i+1) + str(depth+1) + str(1) + str(b+1)
-            o_key = "o" + str(i + 1) + str(depth) + str(b+1)
-            formula.append([i_str[i_key], -o_str[o_key]])
-            formula.append([-i_str[i_key], o_str[o_key]])
+                    if d == depth:
+                        break
+        
 
 
 # # create clauses relating dataset labels with output variables of the last gate in the network (they should be equivalent)
@@ -204,21 +202,39 @@ def relate_w_o(depth, m):
         formula.append([-w_str[w_key], o_str[o_key]])
 
 # create clauses relating output variables with weight variables and simulations variables
-def relate_y_omega_o(depth, layer_size, m, max):
+def relate_y_omega_o_1(depth, layer_size, m, max):
     
     for i in range(m):
         for d in range(depth+1):
-            a = k if d == 0 else layer_size # since the first layer has string bits as inputs
+            b = k if d == 0 else layer_size # since the first layer has string bits as inputs
             for l in range(layer_size):
-                t = 1 if d == depth else l + 1 # last layer only has one gate (output layer)
                 for v in range(max):
                     for v_prime in range(max):
                         if v_prime >= v:
-                            y_key = "y" + str(i+1) + str(d+1) + str(t) + str(a) + str(v_prime)
-                            o_key = "o" + str(i+1) + str(d + 1) + str(t)
-                            omega_key = "omega" + str(d + 1) + str(t) + str(v)
+                            y_key = "y" + str(i+1) + str(d+1) + str(l+1) + str(b) + str(v_prime)
+                            o_key = "o" + str(i+1) + str(d + 1) + str(l+1)
+                            omega_key = "omega" + str(d + 1) + str(l+1) + str(v)
                             formula.append(
                                 [-y_str[y_key], -omega_str[omega_key], o_str[o_key]])
+                            
+                if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
+                    break
+
+
+def relate_y_omega_o_2(depth, layer_size, m, max):
+    
+    for i in range(m):
+        for d in range(depth+1):
+            b = k if d == 0 else layer_size # since the first layer has string bits as inputs
+            for l in range(layer_size):
+                for v in range(max):
+                    for v_prime in range(max):
+                        if v_prime < v:
+                            y_key = "y" + str(i+1) + str(d+1) + str(l+1) + str(b) + str(v_prime)
+                            o_key = "o" + str(i+1) + str(d + 1) + str(l+1)
+                            omega_key = "omega" + str(d + 1) + str(l+1) + str(v)
+                            formula.append(
+                                [-y_str[y_key], -omega_str[omega_key], -o_str[o_key]])
                             
                 if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
                     break
@@ -265,104 +281,128 @@ def uniqueness_omega(depth, layer_size, max):
                 break
 
 
-# # creates clauses that relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1
-# def relate_partial_sums_inputs_0(c, m):
-#     for a in range(c):
-#         for i in range(m):
-#             i_key = "i" + str(a+1) + str(i + 1) + str(1)
-#             y_key_0 = "y" + str(a + 1) + \
-#                 str(i + 1) + str(1) + str(0)
-#             y_key_1 = "y" + str(a + 1) + \
-#                 str(i + 1) + str(1) + str(1)
-#             formula.append([-i_str[i_key], -y_str[y_key_0]])
-#             formula.append([i_str[i_key], y_str[y_key_0]])
-#             formula.append([i_str[i_key], -y_str[y_key_1]])
-#             formula.append([-i_str[i_key], y_str[y_key_1]])
+# creates clauses that relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1 or 0
+def relate_i_y(depth, layer_size, m):
+        for i in range(m):
+            for d in range(depth + 1):
+                for l in range(layer_size):
+                    i_key = "i" + str(i+1) + str(d + 1) + str(l+1) + str(1)
+                    y_key_0 = "y" + str(i + 1) + \
+                        str(d + 1) + str(l+1) + str(1) + str(0)
+                    y_key_1 = "y" + str(i + 1) + \
+                        str(d + 1) + str(l+1) + str(1) + str(1)
+                    formula.append([-i_str[i_key], -y_str[y_key_0]])
+                    formula.append([i_str[i_key], y_str[y_key_0]])
+                    formula.append([i_str[i_key], -y_str[y_key_1]])
+                    formula.append([-i_str[i_key], y_str[y_key_1]])
+                    if d == depth:
+                        break
 
 
-# # creates clauses that relates the partial sums with the inputs
-# def relate_partial_sums_inputs_1(c, m, k, max):
-#     for a in range(c):
-#         for i in range(m):
-#             for b in range(k):
-#                 for v in range(max):
-#                     if b != k-1 and v != max-1:
-#                         y_key_1 = "y" + str(a + 1) + \
-#                             str(i + 1) + str(b+1) + str(v)
-#                         y_key_2 = "y" + \
-#                             str(a + 1) + str(i + 1) + \
-#                             str(b+2) + str(v + 1)
-#                         i_key = "i" + str(a+1) + str(i + 1) + str(b+2)
-#                         formula.append(
-#                             [-y_str[y_key_1], -i_str[i_key], y_str[y_key_2]])
+# creates clauses that relates the partial sums with the inputs
+def relate_partial_sums_inputs_1(depth, layer_size, m, k, max):
+        for i in range(m):
+            for d in range(depth + 1):
+                for l in range(layer_size):
+                    gate_inputs = k if d == 0 else layer_size # every gate in first layer should have k dataset bits as inputs 
+                    for b in range(gate_inputs):
+                        for v in range(max):
+                            if b != gate_inputs-1 and v != max-1:
+                                y_key_1 = "y" + str(i + 1) + \
+                                    str(d + 1) + str(l+1) + str(b+1) + str(v)
+                                y_key_2 = "y" + str(i + 1) + \
+                                    str(d + 1) + str(l+1) + str(b+2) + str(v+1)
+                                i_key = "i" + str(i+1) + str(d + 1) + str(l+1) + str(b+2)
+                                formula.append(
+                                    [-y_str[y_key_1], -i_str[i_key], y_str[y_key_2]])
+                    if d == depth:
+                        break
 
+# creates clauses that relates the partial sums with the inputs
+def relate_partial_sums_inputs_2(depth, layer_size, m, k, max):
+    for i in range(m):
+            for d in range(depth + 1):
+                for l in range(layer_size):
+                    gate_inputs = k if d == 0 else layer_size # every gate in first layer should have k dataset bits as inputs 
+                    for b in range(gate_inputs):
+                        for v in range(max):
+                            if b != gate_inputs-1:
+                                y_key_1 = "y" + str(i + 1) + \
+                                    str(d + 1) + str(l+1) + str(b+1) + str(v)
+                                y_key_2 = "y" + str(i + 1) + \
+                                    str(d + 1) + str(l+1) + str(b+2) + str(v)
+                                i_key = "i" + str(i+1) + str(d + 1) + str(l+1) + str(b+2)
+                                formula.append(
+                                    [-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
+                    if d == depth:
+                        break
 
-# # creates clauses that relates the partial sums with the inputs
-# def relate_partial_sums_inputs_2(c, m, k, max):
-#     for a in range(c):
-#         for i in range(m):
-#             for b in range(k):
-#                 for v in range(max):
-#                     if b != k-1:
-#                         y_key_1 = "y" + str(a + 1) + \
-#                             str(i + 1) + str(b+1) + str(v)
-#                         y_key_2 = "y" + \
-#                             str(a + 1) + str(i + 1) + \
-#                             str(b+2) + str(v)
-#                         i_key = "i" + str(a+1) + str(i + 1) + str(b+2)
-#                         formula.append(
-#                             [-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
 
 
 def generate_formula():
-    #relate_w_i(l, m, k)
-    #relate_o_and_i(d, l, m)
-    #relate_w_o(d, m)
-    #relate_y_omega_o(d, l, m, max)
-     #uniqueness_y(d, l, m, k, max)
-     uniqueness_omega(d, l, max)
-    # relate_partial_sums_inputs_0(C, m)
-    # relate_partial_sums_inputs_1(C, m, k, max)
-    # relate_partial_sums_inputs_2(C, m, k, max)
+    relate_w_i(l, m, k)
+    relate_o_i(d, l, m)
+    relate_w_o(d, m)
+    relate_y_omega_o_1(d, l, m, max)
+    relate_y_omega_o_2(d, l, m, max)
+    uniqueness_y(d, l, m, k, max)
+    uniqueness_omega(d, l, max)
+    relate_i_y(d, l, m)
+    relate_partial_sums_inputs_1(d, l, m, k, max)
+    relate_partial_sums_inputs_2(d, l, m, k, max)
 
 
 # # create assumptions for the dataset variables
-# def fit_data():
-#     for i in range(m):
-#         for j in range(n):
-#             s = "w" + str(i+1) + str(j)
-#             if dataset[i][j] < 1:
-#                 assumptions.append(w_str[s] * -1)
-#             else:
-#                 assumptions.append(w_str[s])
+def fit_data():
+    for i in range(m):
+        for j in range(n):
+            s = "w" + str(i+1) + str(j)
+            if dataset[i][j] < 1:
+                assumptions.append(w_str[s] * -1)
+            else:
+                assumptions.append(w_str[s])
+
+# # create assumptions for evaluation
+def evaluate(weights_and_outputs):
+    assumptions = []
+    merged = {**omega_str,**o_str}
+    for e in merged.keys():
+        if weights_and_outputs.count(e) > 0:
+            assumptions.append(merged[e])
+        else:
+            assumptions.append(merged[e] * -1)
+
+    return assumptions
 
 
-# def merge_dicts(*dicts):
-#     result = {}
-#     for dict in dicts:
-#         result = result | dict
+def merge_dicts(*dicts):
+    result = {}
+    for dict in dicts:
+        result = result | dict
 
-#     return result
+    return result
 
 
-# def translate_model(model):
-#     dict = merge_dicts(w_digit, o_digit, i_digit, omega_digit, y_digit)
-#     translation = []
-#     for i in model:
-#         if i < 0:
-#             s = '-' + dict[i * -1]
-#             translation.append(s)
-#         else:
-#             translation.append(dict[i])
+def translate_model(model):
+    dict = merge_dicts(w_digit, o_digit, i_digit, omega_digit, y_digit)
+    translation = []
+    for i in model:
+        if i < 0:
+            s = '-' + dict[i * -1]
+            translation.append(s)
+        else:
+            translation.append(dict[i])
 
-#     return translation
+    return translation
 
-# def get_accepted_weight(translated_model):
-#     for entry in translated_model:
-#         if entry.startswith("omega"):
-#             return entry
+def get_accepted_weights_and_output(translated_model):
+    result = []
+    for entry in translated_model:
+        if entry.startswith("o"):
+            result.append(entry)
         
-#     return "not found"
+    return result
+
 
 
 def reset():
@@ -443,25 +483,42 @@ def main():
                 k = n -1
 
                 generate_variables()
-                #print(w_str)
-                #print(o_str)
+                print(w_str)
+                print(o_str)
                 print(omega_str)
-                #print(i_str)
-                #print(y_str)
+                print(i_str)
+                print(y_str)
                 print()
                 generate_formula()
 
-                # fit_data()
-                print(formula.clauses)
+                fit_data()
+                #print(formula.clauses)
 
-                # solver.append_formula(formula)
-                # solution = solver.solve(assumptions)
-                # model = solver.get_model()
-                # print(model)
-                # translated_model = translate_model(model)
+                solver.append_formula(formula)
+                solution = solver.solve(assumptions) # saved value not used
+                model = solver.get_model()
+                #print(model)
+                translated_model = translate_model(model)
 
-                # print("Model: ", translated_model)
-                # print("Weight: ", get_accepted_weight(translated_model))
+                accepted_weights = get_accepted_weights_and_output(translated_model)
+
+                print("Model: ", translated_model)
+                print("Weight: ", accepted_weights) # should not be both weight and output
+
+
+                # evaluation (test)
+                solver.delete()
+                solver = Glucose3()
+
+                solver.append_formula(formula)
+            
+                evaluate_assumptions = evaluate(accepted_weights)
+
+                evaluation = solver.solve(evaluate_assumptions) # saved value not used
+                evaluation_model = solver.get_model()
+
+                print("Evalutaion: ", translate_model(evaluation_model))
+
 
                 reset()
             elif row[0] == 'header':
