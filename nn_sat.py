@@ -363,11 +363,11 @@ def fit_data():
                 assumptions.append(w_str[s])
 
 # # create assumptions for evaluation
-def evaluate(weights_and_outputs):
+def evaluate(weights, outputs):
     assumptions = []
     merged = {**omega_str,**o_str}
     for e in merged.keys():
-        if weights_and_outputs.count(e) > 0:
+        if weights.count(e) > 0 or outputs.count(e):
             assumptions.append(merged[e])
         else:
             assumptions.append(merged[e] * -1)
@@ -395,10 +395,18 @@ def translate_model(model):
 
     return translation
 
-def get_accepted_weights_and_output(translated_model):
+def get_accepted_weights(translated_model):
     result = []
     for entry in translated_model:
-        if entry.startswith("o"):
+        if entry.startswith("omega"):
+            result.append(entry)
+        
+    return result
+
+def get_positive_outputs(translated_model):
+    result = []
+    for entry in translated_model:
+        if entry[0] == 'o' and entry[1] != 'm':
             result.append(entry)
         
     return result
@@ -483,6 +491,7 @@ def main():
                 k = n -1
 
                 generate_variables()
+                print("Variables: ")
                 print(w_str)
                 print(o_str)
                 print(omega_str)
@@ -498,12 +507,15 @@ def main():
                 solution = solver.solve(assumptions) # saved value not used
                 model = solver.get_model()
                 #print(model)
+
                 translated_model = translate_model(model)
 
-                accepted_weights = get_accepted_weights_and_output(translated_model)
+                accepted_weights = get_accepted_weights(translated_model)
+                positive_outputs = get_positive_outputs(translated_model)
 
                 print("Model: ", translated_model)
-                print("Weight: ", accepted_weights) # should not be both weight and output
+                print("Weights: ", accepted_weights) 
+                print("Outputs: ", positive_outputs)
 
 
                 # evaluation (test)
@@ -512,7 +524,7 @@ def main():
 
                 solver.append_formula(formula)
             
-                evaluate_assumptions = evaluate(accepted_weights)
+                evaluate_assumptions = evaluate(accepted_weights, positive_outputs)
 
                 evaluation = solver.solve(evaluate_assumptions) # saved value not used
                 evaluation_model = solver.get_model()
