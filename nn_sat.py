@@ -202,7 +202,12 @@ def relate_w_o(depth, m):
         formula.append([-w_str[w_key], o_str[o_key]])
 
 # create clauses relating output variables with weight variables and simulations variables
-def relate_y_omega_o_1(depth, layer_size, m, max):
+def relate_y_omega_o(depth, layer_size, m, max, poitive_output):
+
+    if poitive_output:
+        condition = lambda v_prime, v: v_prime >= v
+    else:
+        condition = lambda v_prime, v: v_prime < v 
     
     for i in range(m):
         for d in range(depth+1):
@@ -210,34 +215,36 @@ def relate_y_omega_o_1(depth, layer_size, m, max):
             for l in range(layer_size):
                 for v in range(max):
                     for v_prime in range(max):
-                        if v_prime >= v:
+                        if condition(v_prime, v):
                             y_key = "y" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1) + '_' + str(b) + '_' + str(v_prime)
-                            o_key = "o" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1)
                             omega_key = "omega" + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(v)
+                            o_key = "o" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1)
                             formula.append(
-                                [-y_str[y_key], -omega_str[omega_key], o_str[o_key]])
+                                [-y_str[y_key], -omega_str[omega_key], o_str[o_key] if poitive_output else -o_str[o_key]])
+                                
+                                
                             
                 if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
                     break
 
 # could be merged with the first method
-def relate_y_omega_o_2(depth, layer_size, m, max):
+# def relate_y_omega_o_2(depth, layer_size, m, max):
     
-    for i in range(m):
-        for d in range(depth+1):
-            b = k if d == 0 else layer_size # since the first layer has string bits as inputs
-            for l in range(layer_size):
-                for v in range(max):
-                    for v_prime in range(max):
-                        if v_prime < v:
-                            y_key = "y" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1) + '_' + str(b) + '_' + str(v_prime)
-                            o_key = "o" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1)
-                            omega_key = "omega" + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(v)
-                            formula.append(
-                                [-y_str[y_key], -omega_str[omega_key], -o_str[o_key]])
+#     for i in range(m):
+#         for d in range(depth+1):
+#             b = k if d == 0 else layer_size # since the first layer has string bits as inputs
+#             for l in range(layer_size):
+#                 for v in range(max):
+#                     for v_prime in range(max):
+#                         if v_prime < v:
+#                             y_key = "y" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1) + '_' + str(b) + '_' + str(v_prime)
+#                             o_key = "o" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1)
+#                             omega_key = "omega" + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(v)
+#                             formula.append(
+#                                 [-y_str[y_key], -omega_str[omega_key], -o_str[o_key]])
                             
-                if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
-                    break
+#                 if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
+#                     break
 
 # define the uniqueness of simulation variables, i.e. of n variables there can only be one that is true while the rest have to be false
 def uniqueness_y(depth, layer_size, m, k, max):
@@ -281,7 +288,7 @@ def uniqueness_omega(depth, layer_size, max):
                 break
 
 
-# creates clauses that relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1 or 0
+# creates clauses that relates input bit 1 of string i so that it is logically equivalent to the simulation variable with weight 1 or 0 depending on its value
 def relate_i_y(depth, layer_size, m):
         for i in range(m):
             for d in range(depth + 1):
@@ -295,47 +302,56 @@ def relate_i_y(depth, layer_size, m):
                     formula.append([i_str[i_key], y_str[y_key_0]])
                     formula.append([i_str[i_key], -y_str[y_key_1]])
                     formula.append([-i_str[i_key], y_str[y_key_1]])
+
                     if d == depth:
                         break
 
 
 # creates clauses that relates the partial sums with the inputs
-def relate_partial_sums_inputs_1(depth, layer_size, m, k, max):
+def relate_partial_sums_inputs(depth, layer_size, m, k, max, positive_input):
+        
+        if positive_input:
+            condition = lambda b, gate_inputs, v, max: b != gate_inputs-1 and v != max-1
+            x = 1
+        else:
+            condition = lambda b, gate_inputs, v, max: b != gate_inputs-1
+            x = 0
+
         for i in range(m):
             for d in range(depth + 1):
                 for l in range(layer_size):
                     gate_inputs = k if d == 0 else layer_size # every gate in first layer should have k dataset bits as inputs 
                     for b in range(gate_inputs):
                         for v in range(max):
-                            if b != gate_inputs-1 and v != max-1:
+                            if condition(b, gate_inputs, v, max):
                                 y_key_1 = "y" + '_' + str(i + 1) + \
                                     '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+1) + '_' + str(v)
                                 y_key_2 = "y" + '_' + str(i + 1) + \
-                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2) + '_' + str(v+1)
+                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2) + '_' + str(v+x)
                                 i_key = "i" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2)
                                 formula.append(
-                                    [-y_str[y_key_1], -i_str[i_key], y_str[y_key_2]])
+                                    [-y_str[y_key_1], -i_str[i_key] if positive_input else i_str[i_key], y_str[y_key_2]])
                     if d == depth:
                         break
 
 # creates clauses that relates the partial sums with the inputs
-def relate_partial_sums_inputs_2(depth, layer_size, m, k, max):
-    for i in range(m):
-            for d in range(depth + 1):
-                for l in range(layer_size):
-                    gate_inputs = k if d == 0 else layer_size # every gate in first layer should have k dataset bits as inputs 
-                    for b in range(gate_inputs):
-                        for v in range(max):
-                            if b != gate_inputs-1:
-                                y_key_1 = "y" + '_' + str(i + 1) + \
-                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+1) + '_' + str(v)
-                                y_key_2 = "y" + '_' + str(i + 1) + \
-                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2) + '_' + str(v)
-                                i_key = "i" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2)
-                                formula.append(
-                                    [-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
-                    if d == depth:
-                        break
+# def relate_partial_sums_inputs_2(depth, layer_size, m, k, max):
+#     for i in range(m):
+#             for d in range(depth + 1):
+#                 for l in range(layer_size):
+#                     gate_inputs = k if d == 0 else layer_size # every gate in first layer should have k dataset bits as inputs 
+#                     for b in range(gate_inputs):
+#                         for v in range(max):
+#                             if b != gate_inputs-1:
+#                                 y_key_1 = "y" + '_' + str(i + 1) + \
+#                                     '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+1) + '_' + str(v)
+#                                 y_key_2 = "y" + '_' + str(i + 1) + \
+#                                     '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2) + '_' + str(v)
+#                                 i_key = "i" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2)
+#                                 formula.append(
+#                                     [-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
+#                     if d == depth:
+#                         break
 
 
 
@@ -343,13 +359,13 @@ def generate_formula():
     relate_w_i(l, m, k)
     relate_o_i(d, l, m)
     relate_w_o(d, m)
-    relate_y_omega_o_1(d, l, m, max)
-    relate_y_omega_o_2(d, l, m, max)
+    relate_y_omega_o(d, l, m, max, True)
+    relate_y_omega_o(d, l, m, max, False)
     uniqueness_y(d, l, m, k, max)
     uniqueness_omega(d, l, max)
     relate_i_y(d, l, m)
-    relate_partial_sums_inputs_1(d, l, m, k, max)
-    relate_partial_sums_inputs_2(d, l, m, k, max)
+    relate_partial_sums_inputs(d, l, m, k, max, True)
+    relate_partial_sums_inputs(d, l, m, k, max, False)
 
 
 # # create assumptions for the dataset variables

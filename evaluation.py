@@ -159,7 +159,7 @@ class Network:
                     pred += str(neuron.predecessors[len(neuron.predecessors) - 1])
 
                 pred += "]"
-                print(neuron," Predecessors: ", pred)
+                #print(neuron," Predecessors: ", pred)
 
 
     
