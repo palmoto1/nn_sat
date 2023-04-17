@@ -62,7 +62,7 @@ def generate_dataset_variables(m, n):
 
     for i in range(m):
         for j in range(n):
-            s = "w" + str(i+1) + str(j)
+            s = "w" + '_' + str(i+1) + '_' + str(j)
             w_str[s] = count
             w_digit[count] = s
 
@@ -76,13 +76,13 @@ def generate_outputs(m, depth, layer_size):
     for i in range(m):
         for d in range(depth):
             for l in range(layer_size):
-                s = "o" + str(i+1) + str(d+1) + str(l+1)
+                s = "o" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1)
                 o_str[s] = count
                 o_digit[count] = s
                 count += 1
         
         # last gate (final output)
-        s = "o" + str(i+1) + str(depth + 1) + str(1)
+        s = "o" + '_' + str(i+1) + '_' + str(depth + 1) + '_' + str(1)
         o_str[s] = count
         o_digit[count] = s
         count += 1
@@ -96,14 +96,14 @@ def generate_weights(depth, layer_size, max):
     for d in range(depth):
         for l in range(layer_size):
             for v in range(max):
-                s = "omega" + str(d+1) + str(l+1) + str(v)
+                s = "omega" + '_' + str(d+1) + '_' + str(l+1) + '_' + str(v)
                 omega_str[s] = count
                 omega_digit[count] = s
                 count += 1
     
     # last gate (final output)
     for v in range(max):
-        s = "omega" + str(depth+1) + str(1) + str(v)
+        s = "omega" + '_' + str(depth+1) + '_' + str(1) + '_' + str(v)
         omega_str[s] = count
         omega_digit[count] = s
         count += 1
@@ -120,13 +120,13 @@ def generate_gate_inputs(depth, layer_size, m, k):
             for l in range(layer_size):
                 gate_inputs = range(k) if d == 0 else range(layer_size) # every gate in first layer should have k dataset bits as inputs 
                 for b in gate_inputs:
-                    s = "i" + str(i+1) + str(d+1) + str(l+1) + str(b+1)
+                    s = "i" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1) + '_' + str(b+1)
                     i_str[s] = count
                     i_digit[count] = s
                     count += 1
         # last gate (final output)
         for b in range(layer_size):
-            s = "i" + str(i+1) + str(depth+1) + str(1) + str(b+1)            
+            s = "i" + '_' + str(i+1) + '_' + str(depth+1) + '_' + str(1) + '_' + str(b+1)            
             i_str[s] = count
             i_digit[count] = s
             count += 1
@@ -143,14 +143,14 @@ def generate_simulation_variables(depth, layer_size, m, k, max):
                 gate_inputs = range(k) if d == 0 else range(layer_size) # every gate in first layer should have k dataset bits as inputs 
                 for b in gate_inputs:
                     for v in range(max):
-                        s = "y" + str(i+1) + str(d+1) + str(l+1) + str(b+1) + str(v)
+                        s = "y" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1) + '_' + str(b+1) + '_' + str(v)
                         y_str[s] = count
                         y_digit[count] = s
                         count += 1
         # last gate (final output)
         for b in range(layer_size):
             for v in range(max):
-                        s = "y" + str(i+1) + str(depth+1) + str(1) + str(b+1) + str(v)
+                        s = "y" + '_' + str(i+1) + '_' + str(depth+1) + '_' + str(1) + '_' + str(b+1) + '_' + str(v)
                         y_str[s] = count
                         y_digit[count] = s
                         count += 1
@@ -170,8 +170,8 @@ def relate_w_i(layer_size, m, k):
     for i in range(m):
         for l in range(layer_size):
             for b in range(k):
-                w_key = "w" + str(i + 1) + str(b+1)
-                i_key = "i" + str(i+1) + str(1) +  str(l+1) + str(b+1)
+                w_key = "w" + '_' + str(i + 1) + '_' + str(b+1)
+                i_key = "i" + '_' + str(i+1) + '_' + str(1) +  '_' + str(l+1) + '_' + str(b+1)
                 formula.append([i_str[i_key], -w_str[w_key]])
                 formula.append([-i_str[i_key], w_str[w_key]])
 
@@ -183,8 +183,8 @@ def relate_o_i(depth, layer_size, m):
             if (d != 0):
                 for l in range(layer_size):
                     for b in range(layer_size):
-                        i_key = "i" + str(i+1) + str(d+1) + str(l+1) + str(b+1)
-                        o_key = "o" + str(i + 1) + str(d) + str(b+1)
+                        i_key = "i" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1) + '_' + str(b+1)
+                        o_key = "o" + '_' + str(i + 1) + '_' + str(d) + '_' + str(b+1)
                         formula.append([i_str[i_key], -o_str[o_key]])
                         formula.append([-i_str[i_key], o_str[o_key]])
                     if d == depth:
@@ -196,8 +196,8 @@ def relate_o_i(depth, layer_size, m):
 def relate_w_o(depth, m):
     
     for i in range(m):
-        w_key = "w" + str(i + 1) + str(0)
-        o_key = "o" + str(i+1) + str(depth+1) + str(1)
+        w_key = "w" + '_' + str(i + 1) + '_' + str(0)
+        o_key = "o" + '_' + str(i+1) + '_' + str(depth+1) + '_' + str(1)
         formula.append([w_str[w_key], -o_str[o_key]])
         formula.append([-w_str[w_key], o_str[o_key]])
 
@@ -211,16 +211,16 @@ def relate_y_omega_o_1(depth, layer_size, m, max):
                 for v in range(max):
                     for v_prime in range(max):
                         if v_prime >= v:
-                            y_key = "y" + str(i+1) + str(d+1) + str(l+1) + str(b) + str(v_prime)
-                            o_key = "o" + str(i+1) + str(d + 1) + str(l+1)
-                            omega_key = "omega" + str(d + 1) + str(l+1) + str(v)
+                            y_key = "y" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1) + '_' + str(b) + '_' + str(v_prime)
+                            o_key = "o" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1)
+                            omega_key = "omega" + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(v)
                             formula.append(
                                 [-y_str[y_key], -omega_str[omega_key], o_str[o_key]])
                             
                 if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
                     break
 
-
+# could be merged with the first method
 def relate_y_omega_o_2(depth, layer_size, m, max):
     
     for i in range(m):
@@ -230,9 +230,9 @@ def relate_y_omega_o_2(depth, layer_size, m, max):
                 for v in range(max):
                     for v_prime in range(max):
                         if v_prime < v:
-                            y_key = "y" + str(i+1) + str(d+1) + str(l+1) + str(b) + str(v_prime)
-                            o_key = "o" + str(i+1) + str(d + 1) + str(l+1)
-                            omega_key = "omega" + str(d + 1) + str(l+1) + str(v)
+                            y_key = "y" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1) + '_' + str(b) + '_' + str(v_prime)
+                            o_key = "o" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1)
+                            omega_key = "omega" + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(v)
                             formula.append(
                                 [-y_str[y_key], -omega_str[omega_key], -o_str[o_key]])
                             
@@ -249,12 +249,12 @@ def uniqueness_y(depth, layer_size, m, k, max):
                 for b in range(a):
                     clause = []
                     for v in range(max):
-                        y_key_1 = "y" + str(i + 1) + \
-                            str(d + 1) + str(t) + str(b+1) + str(v)
+                        y_key_1 = "y" + '_' + str(i + 1) + \
+                            '_' + str(d + 1) + '_' + str(t) + '_' + str(b+1) + '_' + str(v)
                         clause.append(y_str[y_key_1])
                         for v_prime in range(v+1, max):
-                            y_key_2 = "y" + str(i + 1) + \
-                            str(d + 1) + str(t) + str(b+1) + str(v_prime)
+                            y_key_2 = "y" + '_' + str(i + 1) + \
+                            '_' + str(d + 1) + '_' + str(t) + '_' + str(b+1) + '_' + str(v_prime)
                             formula.append([-y_str[y_key_1], -y_str[y_key_2]])
 
                     formula.append(clause)
@@ -269,10 +269,10 @@ def uniqueness_omega(depth, layer_size, max):
             t = 1 if d == depth else l + 1 # last layer only has one gate (output layer)
             clause = []
             for v in range(max):
-                omega_key_1 = "omega" + str(d + 1) + str(t) + str(v)
+                omega_key_1 = "omega" + '_' + str(d + 1) + '_' + str(t) + '_' + str(v)
                 clause.append(omega_str[omega_key_1])
                 for v_prime in range(v+1, max):
-                    omega_key_2 = "omega" + str(d + 1) + str(t) + str(v_prime)
+                    omega_key_2 = "omega" + '_' + str(d + 1) + '_' + str(t) + '_' + str(v_prime)
                     formula.append(
                     [-omega_str[omega_key_1], -omega_str[omega_key_2]])
 
@@ -286,11 +286,11 @@ def relate_i_y(depth, layer_size, m):
         for i in range(m):
             for d in range(depth + 1):
                 for l in range(layer_size):
-                    i_key = "i" + str(i+1) + str(d + 1) + str(l+1) + str(1)
-                    y_key_0 = "y" + str(i + 1) + \
-                        str(d + 1) + str(l+1) + str(1) + str(0)
-                    y_key_1 = "y" + str(i + 1) + \
-                        str(d + 1) + str(l+1) + str(1) + str(1)
+                    i_key = "i" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(1)
+                    y_key_0 = "y" + '_' + str(i + 1) + \
+                        '_' + str(d + 1) + '_' + str(l+1) + '_' + str(1) + '_' + str(0)
+                    y_key_1 = "y" + '_' + str(i + 1) + \
+                        '_' + str(d + 1) + '_' + str(l+1) + '_' + str(1) + '_' + str(1)
                     formula.append([-i_str[i_key], -y_str[y_key_0]])
                     formula.append([i_str[i_key], y_str[y_key_0]])
                     formula.append([i_str[i_key], -y_str[y_key_1]])
@@ -308,11 +308,11 @@ def relate_partial_sums_inputs_1(depth, layer_size, m, k, max):
                     for b in range(gate_inputs):
                         for v in range(max):
                             if b != gate_inputs-1 and v != max-1:
-                                y_key_1 = "y" + str(i + 1) + \
-                                    str(d + 1) + str(l+1) + str(b+1) + str(v)
-                                y_key_2 = "y" + str(i + 1) + \
-                                    str(d + 1) + str(l+1) + str(b+2) + str(v+1)
-                                i_key = "i" + str(i+1) + str(d + 1) + str(l+1) + str(b+2)
+                                y_key_1 = "y" + '_' + str(i + 1) + \
+                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+1) + '_' + str(v)
+                                y_key_2 = "y" + '_' + str(i + 1) + \
+                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2) + '_' + str(v+1)
+                                i_key = "i" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2)
                                 formula.append(
                                     [-y_str[y_key_1], -i_str[i_key], y_str[y_key_2]])
                     if d == depth:
@@ -327,11 +327,11 @@ def relate_partial_sums_inputs_2(depth, layer_size, m, k, max):
                     for b in range(gate_inputs):
                         for v in range(max):
                             if b != gate_inputs-1:
-                                y_key_1 = "y" + str(i + 1) + \
-                                    str(d + 1) + str(l+1) + str(b+1) + str(v)
-                                y_key_2 = "y" + str(i + 1) + \
-                                    str(d + 1) + str(l+1) + str(b+2) + str(v)
-                                i_key = "i" + str(i+1) + str(d + 1) + str(l+1) + str(b+2)
+                                y_key_1 = "y" + '_' + str(i + 1) + \
+                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+1) + '_' + str(v)
+                                y_key_2 = "y" + '_' + str(i + 1) + \
+                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2) + '_' + str(v)
+                                i_key = "i" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2)
                                 formula.append(
                                     [-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
                     if d == depth:
@@ -356,7 +356,7 @@ def generate_formula():
 def fit_data():
     for i in range(m):
         for j in range(n):
-            s = "w" + str(i+1) + str(j)
+            s = "w" + '_' + str(i+1) + '_' + str(j)
             if dataset[i][j] < 1:
                 assumptions.append(w_str[s] * -1)
             else:
