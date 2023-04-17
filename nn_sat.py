@@ -519,17 +519,17 @@ def main():
 
 
                 # evaluation (test)
-                solver.delete()
-                solver = Glucose3()
+                #solver.delete()
+                #solver = Glucose3()
 
-                solver.append_formula(formula)
+                #solver.append_formula(formula)
             
-                evaluate_assumptions = evaluate(accepted_weights, positive_outputs)
+                #evaluate_assumptions = evaluate(accepted_weights, positive_outputs)
 
-                evaluation = solver.solve(evaluate_assumptions) # saved value not used
-                evaluation_model = solver.get_model()
+                #evaluation = solver.solve(evaluate_assumptions) # saved value not used
+                #evaluation_model = solver.get_model()
 
-                print("Evalutaion: ", translate_model(evaluation_model))
+                #print("Evalutaion: ", translate_model(evaluation_model))
 
 
                 reset()

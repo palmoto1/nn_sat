@@ -44,7 +44,6 @@ class Network:
 
     def create_model(self, file_path):
 
-        self.create_input_layer("1111")
 
         with open(file_path, "r") as file:
             csvreader = csv.reader(file)
@@ -69,7 +68,7 @@ class Network:
 
             for key in self.neurons:
                 n = int(key)
-                if (n != 0):
+                if (n != 1):
                     for neuron in self.neurons[key]:
                         neuron.predecessors = self.neurons[str(n - 1)] # do extend if this not works
 
@@ -81,8 +80,15 @@ class Network:
         for i in range(1, len(input)):
             self.neurons[str(0)].append(Neuron(0, i, int(input[i])))
 
+        # connect input layer with first hidden layer
+        for neuron in self.neurons[str(1)]:
+                        neuron.predecessors = self.neurons[str(0)]
 
-    def evaluate(self):
+
+    def evaluate(self, input):
+
+        self.create_input_layer(input)
+        self.print_model()
 
         last_key = str(len(self.neurons) - 1)
 
@@ -90,7 +96,16 @@ class Network:
 
 
 
-        
+    def evaluate_dataset(self, file_path):
+
+        with open(file_path, "r") as file:
+            csvreader = csv.reader(file)
+
+
+            for input in csvreader:
+                if input[0] != 'header' and input[0] != 'end':
+                    print("Evaluation: ", self.evaluate(input))
+                
 
         
 
@@ -153,9 +168,7 @@ network = Network()
 
 network.create_model("./model.csv")
 
-network.print_model()
-
-print("Evaluation: ", network.evaluate())
+network.evaluate_dataset("./test.csv")
 
         
 
