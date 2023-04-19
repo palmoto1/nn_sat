@@ -20,15 +20,15 @@ class Evaluation:
 
             for row in csvreader:
                 weight_variable = row[0]
-                if weight_variable != 'end':
+                
                     
-                    key, pos, threshold = self.parse_neuron_data(weight_variable)
+                key, pos, threshold = self.parse_neuron_data(weight_variable)
 
-                    if key not in self.neurons:
-                        self.neurons[key] = []
+                if key not in self.neurons:
+                    self.neurons[key] = []
 
                                     
-                    self.neurons[key].append(Neuron(key, pos, threshold)) 
+                self.neurons[key].append(Neuron(key, pos, threshold)) 
 
 
             for key in self.neurons:
@@ -63,13 +63,16 @@ class Evaluation:
 
     def evaluate_dataset(self, file_path):
 
+        
         with open(file_path, "r") as file:
             csvreader = csv.reader(file)
 
 
             for input in csvreader:
                 if input[0] != 'header' and input[0] != 'end':
-                    print("Evaluation: ", self.evaluate(input))
+                    #print("Label: ", input[0])
+                    print("Evaluation: ",input[0] == str(self.evaluate(input)))
+                    #print()
                 
 
         
@@ -110,7 +113,7 @@ network = Evaluation()
 
 network.create_model("./model.csv")
 
-network.evaluate_dataset("./test.csv")
+network.evaluate_dataset("./generated_dataset.csv")
 
         
 

@@ -6,6 +6,7 @@ class Neuron:
         self.pos = pos
         self.threshold = threshold
         self.predecessors = []
+        self.output = -1
 
 
     def add_predecessor(self, neuron):
@@ -22,6 +23,9 @@ class Neuron:
             partial_sum += n.get_output()
 
         return 1 if partial_sum >= self.threshold else 0
+    
+    def set_output(self, value):
+        self.output = value
     
 
     def __str__(self):

@@ -7,13 +7,12 @@ import csv
 
 formula = CNF()
 solver = Glucose3()
-file_path = "./test.csv"
+file_path = "./generated_dataset.csv"
+
+model_path = "./model.csv"
 
 dataset = []
 assumptions = []
-
-# number of neurons (not needed?)
-C = 0
 
 # depth of netork
 d = 0
@@ -227,25 +226,6 @@ def relate_y_omega_o(depth, layer_size, m, max, poitive_output):
                 if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
                     break
 
-# could be merged with the first method
-# def relate_y_omega_o_2(depth, layer_size, m, max):
-    
-#     for i in range(m):
-#         for d in range(depth+1):
-#             b = k if d == 0 else layer_size # since the first layer has string bits as inputs
-#             for l in range(layer_size):
-#                 for v in range(max):
-#                     for v_prime in range(max):
-#                         if v_prime < v:
-#                             y_key = "y" + '_' + str(i+1) + '_' + str(d+1) + '_' + str(l+1) + '_' + str(b) + '_' + str(v_prime)
-#                             o_key = "o" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1)
-#                             omega_key = "omega" + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(v)
-#                             formula.append(
-#                                 [-y_str[y_key], -omega_str[omega_key], -o_str[o_key]])
-                            
-#                 if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
-#                     break
-
 # define the uniqueness of simulation variables, i.e. of n variables there can only be one that is true while the rest have to be false
 def uniqueness_y(depth, layer_size, m, k, max):
     for i in range(m):
@@ -312,10 +292,10 @@ def relate_partial_sums_inputs(depth, layer_size, m, k, max, positive_input):
         
         if positive_input:
             condition = lambda b, gate_inputs, v, max: b != gate_inputs-1 and v != max-1
-            x = 1
+            j = 1
         else:
             condition = lambda b, gate_inputs, v, max: b != gate_inputs-1
-            x = 0
+            j = 0
 
         for i in range(m):
             for d in range(depth + 1):
@@ -327,31 +307,12 @@ def relate_partial_sums_inputs(depth, layer_size, m, k, max, positive_input):
                                 y_key_1 = "y" + '_' + str(i + 1) + \
                                     '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+1) + '_' + str(v)
                                 y_key_2 = "y" + '_' + str(i + 1) + \
-                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2) + '_' + str(v+x)
+                                    '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2) + '_' + str(v+j)
                                 i_key = "i" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2)
                                 formula.append(
                                     [-y_str[y_key_1], -i_str[i_key] if positive_input else i_str[i_key], y_str[y_key_2]])
                     if d == depth:
                         break
-
-# creates clauses that relates the partial sums with the inputs
-# def relate_partial_sums_inputs_2(depth, layer_size, m, k, max):
-#     for i in range(m):
-#             for d in range(depth + 1):
-#                 for l in range(layer_size):
-#                     gate_inputs = k if d == 0 else layer_size # every gate in first layer should have k dataset bits as inputs 
-#                     for b in range(gate_inputs):
-#                         for v in range(max):
-#                             if b != gate_inputs-1:
-#                                 y_key_1 = "y" + '_' + str(i + 1) + \
-#                                     '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+1) + '_' + str(v)
-#                                 y_key_2 = "y" + '_' + str(i + 1) + \
-#                                     '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2) + '_' + str(v)
-#                                 i_key = "i" + '_' + str(i+1) + '_' + str(d + 1) + '_' + str(l+1) + '_' + str(b+2)
-#                                 formula.append(
-#                                     [-y_str[y_key_1], i_str[i_key], y_str[y_key_2]])
-#                     if d == depth:
-#                         break
 
 
 
@@ -378,18 +339,6 @@ def fit_data():
             else:
                 assumptions.append(w_str[s])
 
-# # create assumptions for evaluation
-def evaluate(weights, outputs):
-    assumptions = []
-    merged = {**omega_str,**o_str}
-    for e in merged.keys():
-        if weights.count(e) > 0 or outputs.count(e):
-            assumptions.append(merged[e])
-        else:
-            assumptions.append(merged[e] * -1)
-
-    return assumptions
-
 
 def merge_dicts(*dicts):
     result = {}
@@ -415,7 +364,7 @@ def get_accepted_weights(translated_model):
     result = []
     for entry in translated_model:
         if entry.startswith("omega"):
-            result.append(entry)
+            result.append([entry])
         
     return result
 
@@ -506,54 +455,36 @@ def main():
                 n = len(dataset[0])
                 k = n -1
 
+                max = l + 1 if l >= n else n
+
                 generate_variables()
-                print("Variables: ")
-                print(w_str)
-                print(o_str)
-                print(omega_str)
-                print(i_str)
-                print(y_str)
-                print()
                 generate_formula()
 
                 fit_data()
-                #print(formula.clauses)
 
                 solver.append_formula(formula)
                 solution = solver.solve(assumptions) # saved value not used
                 model = solver.get_model()
-                #print(model)
 
                 translated_model = translate_model(model)
 
                 accepted_weights = get_accepted_weights(translated_model)
                 positive_outputs = get_positive_outputs(translated_model)
 
-                print("Model: ", translated_model)
-                print("Weights: ", accepted_weights) 
-                print("Outputs: ", positive_outputs)
+                #print("Model: ", translated_model)
+                #print("Weights: ", accepted_weights) 
+                #print("Outputs: ", positive_outputs)
 
-
-                # evaluation (test)
-                #solver.delete()
-                #solver = Glucose3()
-
-                #solver.append_formula(formula)
-            
-                #evaluate_assumptions = evaluate(accepted_weights, positive_outputs)
-
-                #evaluation = solver.solve(evaluate_assumptions) # saved value not used
-                #evaluation_model = solver.get_model()
-
-                #print("Evalutaion: ", translate_model(evaluation_model))
+                # write gate thresholds to file used in evaluation
+                with open(model_path, 'w') as file:
+                    writer = csv.writer(file)
+                    writer.writerows(accepted_weights)
 
 
                 reset()
             elif row[0] == 'header':
                 d = int(row[1])
                 l = int(row[2])
-                C = int(row[1]) * int(row[2]) + 1
-                max = int(row[3])
             else:
                 a = []
                 for s in row:
@@ -564,21 +495,3 @@ def main():
 # execute script
 main()
 
-
-# print(w_str)
-# print()
-# print(i_str)
-# print()
-# print(o_str)
-# print()
-# print(omega_str)
-# print()
-# print(y_str)
-# print()
-
-
-# print(solution)
-# print(model)
-# print()
-# print(translated_model)
-# print(get_accepted_weight(translated_model))

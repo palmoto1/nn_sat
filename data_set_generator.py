@@ -28,10 +28,9 @@ class DatasetGenerator:
         self.neurons[depth + 1].append(Neuron(depth + 1, 1, threshold))
        
 
-        for key in self.neurons:
-            n = key
+        for n in self.neurons:
             if (n != 1): # we connect input layer and first hidden layer later
-                for neuron in self.neurons[key]:
+                for neuron in self.neurons[n]:
                     neuron.predecessors = self.neurons[n - 1] 
 
 
@@ -40,7 +39,7 @@ class DatasetGenerator:
         self.neurons[0] = []
         #print(input)
         for i in range(len(input)):
-            self.neurons[0].append(Neuron(0, i, int(input[i])))
+            self.neurons[0].append(Neuron(0, i + 1, int(input[i])))
 
         # connect input layer with first hidden layer
         for neuron in self.neurons[1]:
@@ -55,7 +54,8 @@ class DatasetGenerator:
         last_key = len(self.neurons) - 1
 
         #print("Evaluate : ")
-        print(self.neurons[last_key][0])
+        #self.print_model()
+        #print(self.neurons[last_key][0])
         #print("Last gate:", self.neurons[last_key][0].threshold)
         return self.neurons[last_key][0].get_output() 
     
@@ -78,16 +78,21 @@ class DatasetGenerator:
 
 
     def create_inputs(self, no_of_inputs, input_length, file_path):
-         inputs = []
+        inputs = []
+        header = ["header", len(self.neurons) - 2, len(self.neurons[1])] 
          
 
-         for i in range(no_of_inputs):
+        for i in range(no_of_inputs):
               inputs.append(self.create_input(input_length))
          
 
-         with open(file_path, 'w') as file:
+        with open(file_path, 'w') as file:
              writer = csv.writer(file)
+             writer.writerow(header)
              writer.writerows(inputs)
+             writer.writerow(["end"])
+
+        print(inputs)
 
 
     def print_model(self):
@@ -114,9 +119,9 @@ class DatasetGenerator:
 g = DatasetGenerator()
 
 
-g.create_model(10, 10, 5)
+g.create_model(3, 10, 10)
 
-g.create_inputs(10, 5, "./generated_dataset.csv")
+g.create_inputs(100, 10, "./generated_dataset.csv")
 
 
 g.print_model()
