@@ -1,40 +1,9 @@
 import csv
+import re
+from neuron import Neuron
 
 
-class Neuron:
-
-
-    def __init__(self, depth, pos, threshold):
-        self.depth = depth
-        self.pos = pos
-        self.threshold = threshold
-        self.predecessors = []
-
-
-    def add_predecessor(self, neuron):
-        self.predecessors.append(neuron)
-
-
-    def get_output(self):
-
-        if self.depth == 0:
-            return self.threshold
-
-        partial_sum = 0
-        for n in self.predecessors:
-            partial_sum += n.get_output()
-
-        return 1 if partial_sum >= self.threshold else 0
-    
-
-    def __str__(self):
-
-        s = "Depth: " + str(self.depth) + " Position: " + str(self.pos) + " Threshold: " + str(self.threshold)
-        return s
-    
-
-
-class Network:
+class Evaluation:
 
 
 
@@ -53,24 +22,20 @@ class Network:
                 weight_variable = row[0]
                 if weight_variable != 'end':
                     
-                    neuron_data = self.parse_neuron_data(weight_variable) #[key, pos, threshold]
+                    key, pos, threshold = self.parse_neuron_data(weight_variable)
 
-                    key = neuron_data[0]
                     if key not in self.neurons:
                         self.neurons[key] = []
 
-                    pos = neuron_data[1]
-                    threshold = neuron_data[2]
-                    
-                    
-                    self.neurons[key].append(Neuron(key, pos, int(threshold))) 
+                                    
+                    self.neurons[key].append(Neuron(key, pos, threshold)) 
 
 
             for key in self.neurons:
                 n = int(key)
-                if (n != 1):
+                if (n != 1): # we connect input layer and first hidden layer later
                     for neuron in self.neurons[key]:
-                        neuron.predecessors = self.neurons[str(n - 1)] # do extend if this not works
+                        neuron.predecessors = self.neurons[str(n - 1)] 
 
 
     def create_input_layer(self, input):
@@ -88,7 +53,7 @@ class Network:
     def evaluate(self, input):
 
         self.create_input_layer(input)
-        self.print_model()
+        #self.print_model()
 
         last_key = str(len(self.neurons) - 1)
 
@@ -111,36 +76,13 @@ class Network:
 
     
     def parse_neuron_data(self, s):
-        result = []
+        pattern = r'^omega_(\d+)_(\d+)_(\d+(?:\.\d+)?)$'
+        match = re.match(pattern, s)
+        if not match:
+            raise ValueError(f"Invalid neuron string: {s}")
+        return match.group(1), match.group(2), int(match.group(3))
+    
 
-        i = 6 # we always start parsing from index 6 due to the format
-        key = ""
-
-        while s[i] != '_':
-            key += s[i]
-            i += 1
-
-        result.append(key)
-
-        i += 1
-        pos = ""
-
-        while s[i] != '_':
-            pos += s[i]
-            i += 1
-
-        result.append(pos)
-
-        i += 1
-        threshold = ""
-
-        while i < len(s):
-            threshold += s[i]
-            i += 1
-
-        result.append(threshold)
-
-        return result
 
     def print_model(self):
 
@@ -159,12 +101,12 @@ class Network:
                     pred += str(neuron.predecessors[len(neuron.predecessors) - 1])
 
                 pred += "]"
-                #print(neuron," Predecessors: ", pred)
+                print(neuron," Predecessors: ", pred)
 
 
     
 
-network = Network()
+network = Evaluation()
 
 network.create_model("./model.csv")
 
