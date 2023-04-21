@@ -5,14 +5,12 @@ from neuron import Neuron
 
 class Evaluation:
 
-
-
     def __init__(self):
         self.neurons = {}
 
 
     def create_model(self, file_path):
-
+        self.neurons = {}
 
         with open(file_path, "r") as file:
             csvreader = csv.reader(file)
@@ -67,12 +65,15 @@ class Evaluation:
         with open(file_path, "r") as file:
             csvreader = csv.reader(file)
 
-
+            result = True
             for input in csvreader:
                 if input[0] != 'header' and input[0] != 'end':
+                    if(input[0] != str(self.evaluate(input))):
+                        result = False
                     #print("Label: ", input[0])
-                    print("Evaluation: ",input[0] == str(self.evaluate(input)))
+                    #print("Evaluation: ",input[0] == str(self.evaluate(input)))
                     #print()
+            print(result)
                 
 
         
@@ -109,11 +110,9 @@ class Evaluation:
 
     
 
-network = Evaluation()
-
-network.create_model("./model.csv")
-
-network.evaluate_dataset("./generated_dataset.csv")
+# network = Evaluation()
+# network.create_model("./model.csv")
+# network.evaluate_dataset("./generated_dataset.csv")
 
         
 

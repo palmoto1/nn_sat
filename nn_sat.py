@@ -432,7 +432,7 @@ def reset():
     y_str = {}
     y_digit = {}
 
-def main():
+def run_nn_sat():
     global solver
     global formula
     global dataset
@@ -456,7 +456,7 @@ def main():
                 k = n -1
 
                 max = l + 1 if l >= n else n
-
+                #print('max: ', max) #TEST
                 generate_variables()
                 generate_formula()
 
@@ -493,5 +493,5 @@ def main():
                 
 
 # execute script
-main()
+#run_nn_sat()
 

@@ -12,6 +12,7 @@ class DatasetGenerator:
 
 
     def create_model(self, depth, layer_size, string_length):
+        self.neurons = {}
         for d in range(1, depth + 1):
             for l in range(1, layer_size + 1):
                 if d not in self.neurons:
@@ -92,7 +93,7 @@ class DatasetGenerator:
              writer.writerows(inputs)
              writer.writerow(["end"])
 
-        print(inputs)
+        #print(inputs)
 
 
     def print_model(self):
@@ -116,12 +117,7 @@ class DatasetGenerator:
 
 
 
-g = DatasetGenerator()
-
-
-g.create_model(2, 10, 10)
-
-g.create_inputs(100, 10, "./generated_dataset.csv")
-
-
-g.print_model()
+#g = DatasetGenerator()
+# g.create_model(3, 8, 8)
+# g.create_inputs(100, 8, "./generated_dataset.csv")
+# g.print_model()
