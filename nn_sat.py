@@ -7,7 +7,7 @@ import csv
 
 formula = CNF()
 solver = Glucose3()
-file_path = "./generated_dataset.csv"
+#file_path = "./generated_dataset.csv"
 
 model_path = "./model.csv"
 
@@ -432,7 +432,7 @@ def reset():
     y_str = {}
     y_digit = {}
 
-def run_nn_sat():
+def run_nn_sat(file_path):
     global solver
     global formula
     global dataset
@@ -458,21 +458,24 @@ def run_nn_sat():
                 max = l + 1 if l >= n else n
                 #print('max: ', max) #TEST
                 generate_variables()
+                print('Variables generated')  # TEST - EXPERIMENT
                 generate_formula()
+                print('Forumla generated')  # TEST - EXPERIMENT
 
                 fit_data()
 
                 solver.append_formula(formula)
                 solution = solver.solve(assumptions) # saved value not used
+                print('Solution found') #TEST - EXPERIMENT
                 model = solver.get_model()
 
                 translated_model = translate_model(model)
 
                 accepted_weights = get_accepted_weights(translated_model)
-                positive_outputs = get_positive_outputs(translated_model)
+                #positive_outputs = get_positive_outputs(translated_model)
 
                 #print("Model: ", translated_model)
-                print("Weights: ", accepted_weights) 
+                #print("Weights: ", accepted_weights) 
                 #print("Outputs: ", positive_outputs)
 
                 # write gate thresholds to file used in evaluation
@@ -493,5 +496,5 @@ def run_nn_sat():
                 
 
 # execute script
-#run_nn_sat()
+run_nn_sat("./generated_dataset.csv")
 

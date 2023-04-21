@@ -1,5 +1,6 @@
 import csv
 import random
+import decimal
 from neuron import Neuron
 
 class DatasetGenerator:
@@ -7,9 +8,41 @@ class DatasetGenerator:
 
     def __init__(self):
         self.neurons = {}
+        
+    def create_dataset(self, depth, layer_size, no_of_inputs, input_length, file_path):
+        inputs = []
 
+        while not self.check_distribution(inputs, 0.8):
+            inputs = []
+            self.create_model(depth, layer_size, input_length)
 
+            for i in range(no_of_inputs):
+              inputs.append(self.create_input(input_length))
+              
+        header = ["header", len(self.neurons) - 2, len(self.neurons[1])]
+        with open(file_path, 'w') as file:
+            writer = csv.writer(file)
+            writer.writerow(header)
+            writer.writerows(inputs)
+            writer.writerow(["end"])
 
+    def check_distribution(self, dataset, threshold):
+        if not dataset:
+            return False
+        
+        num_pos = 0
+        num_neg = 0
+
+        for item in dataset:
+            if(item[0] == '1'):
+                num_pos += 1
+            else:
+                num_neg += 1
+        
+        spread_neg = num_neg / len(dataset)
+        spread_pos = num_pos / len(dataset)
+        
+        return not spread_neg >= threshold and not spread_pos >= threshold
 
     def create_model(self, depth, layer_size, string_length):
         self.neurons = {}
@@ -36,7 +69,6 @@ class DatasetGenerator:
 
 
     def create_input_layer(self, input):
-
         self.neurons[0] = []
         #print(input)
         for i in range(len(input)):
@@ -48,29 +80,18 @@ class DatasetGenerator:
 
 
     def evaluate(self, input):
-
-        #g.print_model()
         self.create_input_layer(input)
 
         last_key = len(self.neurons) - 1
-
-        #print("Evaluate : ")
-        #self.print_model()
-        #print(self.neurons[last_key][0])
-        #print("Last gate:", self.neurons[last_key][0].threshold)
         return self.neurons[last_key][0].get_output() 
     
 
     def create_input(self, length):
-         
         input = ""
 
         for i in range(length):
             input += random.choice(['0', '1'])
 
-
-        #print(input)
-        #print(self.evaluate(input))
         label = str(self.evaluate(input))
 
         return label + input
@@ -78,22 +99,18 @@ class DatasetGenerator:
         
 
 
-    def create_inputs(self, no_of_inputs, input_length, file_path):
-        inputs = []
-        header = ["header", len(self.neurons) - 1, len(self.neurons[1])] 
-         
-
-        for i in range(no_of_inputs):
-              inputs.append(self.create_input(input_length))
-         
-
-        with open(file_path, 'w') as file:
-             writer = csv.writer(file)
-             writer.writerow(header)
-             writer.writerows(inputs)
-             writer.writerow(["end"])
-
-        #print(inputs)
+    
+    
+    #For overnight dataset generation
+    def generate_datasets_by_depth(self, layer_size, n, dataset_size, no_datasets):
+        d = 1
+        while(d <= no_datasets):
+            print(d)
+            file_path = "./datasets/generated_dataset" + str(d) + ".csv"
+            #self.create_model(d, layer_size, n)
+            #self.create_inputs(dataset_size, n, file_path)
+            self.create_dataset(d, layer_size, dataset_size, n, file_path)
+            d += 1
 
 
     def print_model(self):
@@ -117,7 +134,10 @@ class DatasetGenerator:
 
 
 
-#g = DatasetGenerator()
+g = DatasetGenerator()
+#g.create_dataset(3, 8, 10, 8, "./generated_dataset.csv")
+g.generate_datasets_by_depth(8, 10, 10, 10)
 # g.create_model(3, 8, 8)
 # g.create_inputs(100, 8, "./generated_dataset.csv")
 # g.print_model()
+
