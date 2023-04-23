@@ -95,11 +95,11 @@ class DatasetGenerator:
         for d in range(len(self.neurons)):
             self.layer_sums[d] = 0
 
-        print("Input: ", input)
-        self.print_model()
+        #print("Input: ", input)
+        #self.print_model()
 
         for d in range(len(self.neurons)):
-            print("Depth: ", d)
+            #print("Depth: ", d)
             for n in self.neurons[d]:
                 if d == 0: # input layer
                     self.layer_sums[0] += n.threshold
@@ -117,14 +117,14 @@ class DatasetGenerator:
     def create_input(self, length):
         input = ""
 
-        for i in range(length):
+        for _ in range(length):
             input += random.choice(['0', '1'])
 
         label = str(self.evaluate(input))
 
-        print("Label: ", label)
-        print("Layer sums: ", self.layer_sums)
-        print()
+        #print("Label: ", label)
+        #print("Layer sums: ", self.layer_sums)
+        #print()
 
         return label + input
 
@@ -167,7 +167,7 @@ class DatasetGenerator:
 
 
 g = DatasetGenerator()
-g.create_dataset(6, 6, 10, 10, "./generated_dataset.csv")
+g.create_dataset(8, 8, 100, 10, "./generated_dataset.csv")
 #g.generate_datasets_by_depth(8, 10, 10, 10)
 # g.create_model(3, 8, 8)
 # g.create_inputs(100, 8, "./generated_dataset.csv")
