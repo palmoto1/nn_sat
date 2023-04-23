@@ -1,0 +1,85 @@
+Dataset_1
+Depth: 1 Activated neurons: 2
+Depth: 2 Activated neurons: 4
+Depth: 3 Activated neurons: 5
+Depth: 4 Activated neurons: 5
+Depth: 5 Activated neurons: 4
+end
+Dataset_2
+Depth: 1 Activated neurons: 1
+Depth: 2 Activated neurons: 2
+Depth: 3 Activated neurons: 2
+Depth: 4 Activated neurons: 5
+Depth: 5 Activated neurons: 1
+Depth: 6 Activated neurons: 4
+Depth: 7 Activated neurons: 9
+Depth: 8 Activated neurons: 3
+Depth: 9 Activated neurons: 7
+Depth: 10 Activated neurons: 7
+end
+Dataset_3
+Depth: 1 Activated neurons: 6
+Depth: 2 Activated neurons: 8
+Depth: 3 Activated neurons: 2
+Depth: 4 Activated neurons: 6
+Depth: 5 Activated neurons: 5
+Depth: 6 Activated neurons: 1
+Depth: 7 Activated neurons: 5
+Depth: 8 Activated neurons: 3
+Depth: 9 Activated neurons: 5
+Depth: 10 Activated neurons: 5
+Depth: 11 Activated neurons: 3
+Depth: 12 Activated neurons: 7
+Depth: 13 Activated neurons: 5
+Depth: 14 Activated neurons: 7
+Depth: 15 Activated neurons: 7
+end
+Dataset_4
+Depth: 1 Activated neurons: 1
+Depth: 2 Activated neurons: 1
+Depth: 3 Activated neurons: 1
+Depth: 4 Activated neurons: 1
+Depth: 5 Activated neurons: 4
+Depth: 6 Activated neurons: 3
+Depth: 7 Activated neurons: 5
+Depth: 8 Activated neurons: 3
+Depth: 9 Activated neurons: 4
+Depth: 10 Activated neurons: 7
+Depth: 11 Activated neurons: 5
+Depth: 12 Activated neurons: 1
+Depth: 13 Activated neurons: 7
+Depth: 14 Activated neurons: 6
+Depth: 15 Activated neurons: 3
+Depth: 16 Activated neurons: 7
+Depth: 17 Activated neurons: 3
+Depth: 18 Activated neurons: 3
+Depth: 19 Activated neurons: 9
+Depth: 20 Activated neurons: 9
+end
+Dataset_5
+Depth: 1 Activated neurons: 4
+Depth: 2 Activated neurons: 2
+Depth: 3 Activated neurons: 2
+Depth: 4 Activated neurons: 3
+Depth: 5 Activated neurons: 1
+Depth: 6 Activated neurons: 1
+Depth: 7 Activated neurons: 1
+Depth: 8 Activated neurons: 1
+Depth: 9 Activated neurons: 1
+Depth: 10 Activated neurons: 1
+Depth: 11 Activated neurons: 2
+Depth: 12 Activated neurons: 2
+Depth: 13 Activated neurons: 1
+Depth: 14 Activated neurons: 3
+Depth: 15 Activated neurons: 3
+Depth: 16 Activated neurons: 2
+Depth: 17 Activated neurons: 2
+Depth: 18 Activated neurons: 5
+Depth: 19 Activated neurons: 4
+Depth: 20 Activated neurons: 4
+Depth: 21 Activated neurons: 4
+Depth: 22 Activated neurons: 4
+Depth: 23 Activated neurons: 4
+Depth: 24 Activated neurons: 5
+Depth: 25 Activated neurons: 4
+end
