@@ -8,7 +8,7 @@ class Evaluation:
     def __init__(self):
         self.neurons = {}
         self.layer_sums = {}
-
+        self.total_activated_neurons = {} # to be able to get number of activated neurons per layer for a dataset
 
     def create_model(self, file_path):
         self.neurons = {}
@@ -60,9 +60,10 @@ class Evaluation:
             for n in self.neurons[str(d)]:
                 if d == 0: # input layer
                     self.layer_sums[0] += n.threshold
-
+                    
                 elif self.layer_sums[d-1] >= n.threshold:
                     self.layer_sums[d] += 1
+                    self.total_activated_neurons[d] += 1
                     
 
         output_layer = len(self.layer_sums) - 1
@@ -73,6 +74,9 @@ class Evaluation:
 
     def evaluate_dataset(self, file_path):
 
+        self.total_activated_neurons = {}
+        for d in range(1, len(self.neurons) + 1):
+            self.total_activated_neurons[d] = 0
         
         with open(file_path, "r") as file:
             csvreader = csv.reader(file)
@@ -80,7 +84,8 @@ class Evaluation:
             result = True
             for input in csvreader:
                 if input[0] != 'header' and input[0] != 'end':
-                    if(input[0] != str(self.evaluate(input))):
+                    evaluation = str(self.evaluate(input))
+                    if(input[0] != evaluation):
                         result = False
                     #print("Label: ", input[0])
                     #print("Evaluation: ",input[0] == str(self.evaluate(input)))
@@ -122,9 +127,9 @@ class Evaluation:
 
     
 
-network = Evaluation()
-network.create_model("./model.csv")
-network.evaluate_dataset("./generated_dataset.csv")
+# network = Evaluation()
+# network.create_model("./model.csv")
+# network.evaluate_dataset("./generated_dataset.csv")
 
         
 

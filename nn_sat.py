@@ -7,9 +7,6 @@ import csv
 
 formula = CNF()
 solver = Glucose3()
-#file_path = "./generated_dataset.csv"
-
-model_path = "./model.csv"
 
 dataset = []
 assumptions = []
@@ -432,7 +429,7 @@ def reset():
     y_str = {}
     y_digit = {}
 
-def run_nn_sat(file_path):
+def run_nn_sat(dataset_path, model_path):
     global solver
     global formula
     global dataset
@@ -447,7 +444,7 @@ def run_nn_sat(file_path):
     global m
     global k
 
-    with open(file_path, "r") as file:
+    with open(dataset_path, "r") as file:
         csvreader = csv.reader(file)
         for row in csvreader:
             if row[0] == 'end':
@@ -475,7 +472,7 @@ def run_nn_sat(file_path):
                 #positive_outputs = get_positive_outputs(translated_model)
 
                 #print("Model: ", translated_model)
-                print("Weights: ", accepted_weights) 
+                #print("Weights: ", accepted_weights) 
                 #print("Outputs: ", positive_outputs)
 
                 # write gate thresholds to file used in evaluation
@@ -496,5 +493,5 @@ def run_nn_sat(file_path):
                 
 
 # execute script
-run_nn_sat("./generated_dataset.csv")
+#run_nn_sat("./generated_dataset.csv")
 

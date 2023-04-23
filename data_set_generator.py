@@ -9,10 +9,10 @@ class DatasetGenerator:
         self.neurons = {}
         self.layer_sums = {}
         
-    def create_dataset(self, depth, layer_size, no_of_inputs, input_length, file_path):
+    def create_dataset(self, depth, layer_size, no_of_inputs, input_length, distribution_threshold, file_path):
         inputs = []
 
-        while not self.check_distribution(inputs, 0.8):
+        while not self.check_distribution(inputs, distribution_threshold):
             
             inputs = []
             self.create_model(depth, layer_size, input_length)
@@ -166,8 +166,8 @@ class DatasetGenerator:
 
 
 
-g = DatasetGenerator()
-g.create_dataset(8, 8, 100, 10, "./generated_dataset.csv")
+#g = DatasetGenerator()
+#g.create_dataset(8, 8, 100, 10, 0.8, "./generated_dataset.csv")
 #g.generate_datasets_by_depth(8, 10, 10, 10)
 # g.create_model(3, 8, 8)
 # g.create_inputs(100, 8, "./generated_dataset.csv")
