@@ -475,7 +475,7 @@ def run_nn_sat(file_path):
                 #positive_outputs = get_positive_outputs(translated_model)
 
                 #print("Model: ", translated_model)
-                #print("Weights: ", accepted_weights) 
+                print("Weights: ", accepted_weights) 
                 #print("Outputs: ", positive_outputs)
 
                 # write gate thresholds to file used in evaluation
