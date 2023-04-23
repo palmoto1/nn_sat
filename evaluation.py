@@ -56,11 +56,7 @@ class Evaluation:
         for d in range(len(self.neurons)):
             self.layer_sums[d] = 0
 
-        print("Input: ", input)
-        self.print_model()
-
         for d in range(len(self.neurons)):
-            print("Depth: ", d)
             for n in self.neurons[str(d)]:
                 if d == 0: # input layer
                     self.layer_sums[0] += n.threshold
