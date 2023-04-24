@@ -166,8 +166,8 @@ class DatasetGenerator:
 
 
 
-#g = DatasetGenerator()
-#g.create_dataset(8, 8, 100, 10, 0.8, "./generated_dataset.csv")
+g = DatasetGenerator()
+g.create_dataset(11, 8, 100, 10, 0.8, "./generated_dataset.csv")
 #g.generate_datasets_by_depth(8, 10, 10, 10)
 # g.create_model(3, 8, 8)
 # g.create_inputs(100, 8, "./generated_dataset.csv")

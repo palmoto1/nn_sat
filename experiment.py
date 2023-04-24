@@ -10,51 +10,70 @@ evaluator = Evaluation()
 
 #Ensure that the model fits the dataset correctly by increasing the length of n with the power 2,
 # i.e. n = 8 → n = 16 → n = 32 etc. d, l and dataset_size are constant.
-# def experiment1(depth, layer_size, dataset_size):
-#     print('EXPERIMENT 1')
-#     n = 8
-#     while(i < 500):
+def experiment1(start, factor, range, depth, layer_size, dataset_size):
+    print('EXPERIMENT 1')
+    result = []
+    n = start
+    i = 1
+    while(n < range):
         
-#         print('i:', i)
-#         generator.create_model(depth, layer_size, n)
-#         generator.create_inputs(dataset_size, n, "./generated_dataset.csv")
-#         print('Dataset generated')  # TEST - EXPERIMENT
+        print('n:', n)
+        generator.create_dataset(depth, layer_size, dataset_size, n, 0.8, "./experiments/experiment1/datasets/dataset" + str(i) + ".csv")
+
+        print('Dataset generated')
         
-#         run_nn_sat("./generated_dataset.csv")
+        run_nn_sat("./experiments/experiment1/datasets/dataset" + str(i) + ".csv", "./experiments/experiment1/models/model" + str(i) + ".csv")
         
-#         evaluator.create_model("./model.csv")
-#         evaluator.evaluate_dataset("./generated_dataset.csv")
+        evaluator.create_model("./experiments/experiment1/models/model" + str(i) + ".csv")
+        evaluation = evaluator.evaluate_dataset("./experiments/experiment1/datasets/dataset" + str(i) + ".csv")
+
+        result.append(["Dataset_" + str(i)])
+        result.append(["Input string length: " + str(n) + " Evaluation: " + str(evaluation)])
+        result.append(["end"])
         
-#         i *= 2
+        n *= factor
+        i += 1
+
+    with open("./experiments/experiment1/result/evaluations.csv", 'w') as file:
+            writer = csv.writer(file)
+            writer.writerows(result)
         
 # #Investigates the relation between d and time for computing the network. l, n and dataset_size are constant.
-# def experiment2(n, layer_size, dataset_size):
-#     print('EXPERIMENT 2')
+def experiment2(n, layer_size, dataset_size, time_limit_minutes):
+    print('EXPERIMENT 2')
+    result = []
 
-#     d = 1
-#     running = True
+    d = 1
+    running = True
     
-#     while(running):
-#         print('d:', d)
-#         generator.create_model(d, layer_size, n)
-#         generator.create_inputs(dataset_size, n, "./generated_dataset.csv")
-#         print('Dataset generated')  # TEST - EXPERIMENT
+    while(running):
+        print('d:', d)
+        generator.create_dataset(d, layer_size, dataset_size, n, 0.8, "./experiments/experiment2/datasets/dataset" + str(d) + ".csv")
+
+        print('Dataset generated')  # TEST - EXPERIMENT
         
-#         start = time.time()
-#         run_nn_sat("./generated_dataset.csv")
-#         stop = time.time()
+        start = time.time()
+        run_nn_sat("./experiments/experiment2/datasets/dataset" + str(d) + ".csv", "./experiments/experiment2/models/model" + str(d) + ".csv")
+        stop = time.time()
         
-#         evaluator.create_model("./model.csv")
-#         evaluator.evaluate_dataset("./generated_dataset.csv")
+        evaluator.create_model("./experiments/experiment2/models/model" + str(d) + ".csv")
+        evaluation = evaluator.evaluate_dataset("./experiments/experiment2/datasets/dataset" + str(d) + ".csv")
         
-#         execution_time = stop - start
-#         print('Execution time (sec): ', execution_time)
+        execution_time = stop - start
+        #print('Execution time (sec): ', execution_time)
+
+        result.append(["Dataset_" + str(d)])
+        result.append(["Depth: " + str(d) + " Evaluation: " + str(evaluation) + " Execution time (seconds): " + str(execution_time)])
+        result.append(["end"])
         
-#         if(execution_time/60 >= 10):
-#             running = False
+        if(execution_time/60 >= time_limit_minutes):
+            running = False
         
-#         d += 1
-#         print()
+        d += 1
+
+    with open("./experiments/experiment2/result/execution_times.csv", 'w') as file:
+            writer = csv.writer(file)
+            writer.writerows(result)
 
 
 #Investigates the influence of d with the number of activated neurons at layer d.
@@ -119,6 +138,6 @@ def experiment3(n, layer_size, dataset_size, no_of_datasets):
 
 
         
-#experiment1(2, 4, 100)
-#experiment2(10, 8, 100)
-experiment3(10, 5, 2, 5)
+#experiment1(2, 2, 64, 10, 10, 10)
+experiment2(10, 8, 100, 1)
+#experiment3(10, 5, 2, 5)

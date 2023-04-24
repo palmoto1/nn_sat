@@ -90,7 +90,7 @@ class Evaluation:
                     #print("Label: ", input[0])
                     #print("Evaluation: ",input[0] == str(self.evaluate(input)))
                     #print()
-            print('Evaluation: ', result)
+            return result
                 
 
         
@@ -127,9 +127,9 @@ class Evaluation:
 
     
 
-#network = Evaluation()
-#network.create_model("./model.csv")
-#network.evaluate_dataset("./generated_dataset.csv")
+network = Evaluation()
+network.create_model("./model.csv")
+print(network.evaluate_dataset("./generated_dataset.csv"))
 
         
 
