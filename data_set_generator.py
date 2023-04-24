@@ -5,19 +5,23 @@ from neuron import Neuron
 
 class DatasetGenerator:
 
-
     def __init__(self):
         self.neurons = {}
+        self.layer_sums = {}
         
     def create_dataset(self, depth, layer_size, no_of_inputs, input_length, file_path):
         inputs = []
 
         while not self.check_distribution(inputs, 0.8):
+            
             inputs = []
             self.create_model(depth, layer_size, input_length)
 
-            for i in range(no_of_inputs):
-              inputs.append(self.create_input(input_length))
+            for _ in range(no_of_inputs):
+              input = self.create_input(input_length)
+              inputs.append(input)
+            
+            #print(inputs)
               
         header = ["header", len(self.neurons) - 2, len(self.neurons[1])]
         with open(file_path, 'w') as file:
@@ -46,6 +50,7 @@ class DatasetGenerator:
 
     def create_model(self, depth, layer_size, string_length):
         self.neurons = {}
+
         for d in range(1, depth + 1):
             for l in range(1, layer_size + 1):
                 if d not in self.neurons:
@@ -54,10 +59,11 @@ class DatasetGenerator:
                     threshold = random.randint(1, string_length)
                 else:
                     threshold = random.randint(1, layer_size)
+
                 self.neurons[d].append(Neuron(d, l, threshold))
         
         # output layer
-        self.neurons[depth +1] = []
+        self.neurons[depth + 1] = []
         threshold = random.randint(1, layer_size)
         self.neurons[depth + 1].append(Neuron(depth + 1, 1, threshold))
        
@@ -69,7 +75,10 @@ class DatasetGenerator:
 
 
     def create_input_layer(self, input):
+    
         self.neurons[0] = []
+
+                       
         #print(input)
         for i in range(len(input)):
             self.neurons[0].append(Neuron(0, i + 1, int(input[i])))
@@ -78,12 +87,31 @@ class DatasetGenerator:
         for neuron in self.neurons[1]:
             neuron.predecessors = self.neurons[0]
 
-
+    
     def evaluate(self, input):
         self.create_input_layer(input)
 
-        last_key = len(self.neurons) - 1
-        return self.neurons[last_key][0].get_output() 
+        self.layer_sums = {}
+        for d in range(len(self.neurons)):
+            self.layer_sums[d] = 0
+
+        print("Input: ", input)
+        self.print_model()
+
+        for d in range(len(self.neurons)):
+            print("Depth: ", d)
+            for n in self.neurons[d]:
+                if d == 0: # input layer
+                    self.layer_sums[0] += n.threshold
+
+                elif self.layer_sums[d-1] >= n.threshold:
+                    self.layer_sums[d] += 1
+                    
+
+        output_layer = len(self.layer_sums) - 1
+        
+        return self.layer_sums[output_layer]
+
     
 
     def create_input(self, length):
@@ -93,6 +121,10 @@ class DatasetGenerator:
             input += random.choice(['0', '1'])
 
         label = str(self.evaluate(input))
+
+        print("Label: ", label)
+        print("Layer sums: ", self.layer_sums)
+        print()
 
         return label + input
 
@@ -135,8 +167,8 @@ class DatasetGenerator:
 
 
 g = DatasetGenerator()
-#g.create_dataset(3, 8, 10, 8, "./generated_dataset.csv")
-g.generate_datasets_by_depth(8, 10, 25, 50)
+g.create_dataset(6, 6, 10, 10, "./generated_dataset.csv")
+#g.generate_datasets_by_depth(8, 10, 10, 10)
 # g.create_model(3, 8, 8)
 # g.create_inputs(100, 8, "./generated_dataset.csv")
 # g.print_model()

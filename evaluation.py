@@ -7,6 +7,7 @@ class Evaluation:
 
     def __init__(self):
         self.neurons = {}
+        self.layer_sums = {}
 
 
     def create_model(self, file_path):
@@ -49,13 +50,28 @@ class Evaluation:
 
 
     def evaluate(self, input):
-
         self.create_input_layer(input)
-        #self.print_model()
 
-        last_key = str(len(self.neurons) - 1)
+        self.layer_sums = {}
+        for d in range(len(self.neurons)):
+            self.layer_sums[d] = 0
 
-        return self.neurons[last_key][0].get_output()
+        print("Input: ", input)
+        self.print_model()
+
+        for d in range(len(self.neurons)):
+            print("Depth: ", d)
+            for n in self.neurons[str(d)]:
+                if d == 0: # input layer
+                    self.layer_sums[0] += n.threshold
+
+                elif self.layer_sums[d-1] >= n.threshold:
+                    self.layer_sums[d] += 1
+                    
+
+        output_layer = len(self.layer_sums) - 1
+        
+        return self.layer_sums[output_layer]
 
 
 

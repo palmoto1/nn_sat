@@ -29,7 +29,7 @@ class Neuron:
     
 
     def __str__(self):
-
-        s = "Depth: " + str(self.depth) + " Position: " + str(self.pos) + " Threshold: " + str(self.threshold) + " Output: " + str(self.get_output()) 
+        s = "Depth: " + str(self.depth) + " Position: " + str(self.pos) + " Threshold: " + str(self.threshold)
+        #s = "Depth: " + str(self.depth) + " Position: " + str(self.pos) + " Threshold: " + str(self.threshold) + " Output: " + str(self.get_output()) 
         return s
     
