@@ -127,9 +127,9 @@ class Evaluation:
 
     
 
-# network = Evaluation()
-# network.create_model("./model.csv")
-# network.evaluate_dataset("./generated_dataset.csv")
+#network = Evaluation()
+#network.create_model("./model.csv")
+#network.evaluate_dataset("./generated_dataset.csv")
 
         
 

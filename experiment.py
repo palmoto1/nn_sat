@@ -65,11 +65,11 @@ def experiment3(n, layer_size, dataset_size, no_of_datasets):
     result = []
     d = no_of_datasets
 
-    generator.create_dataset(d, layer_size, dataset_size, n, 0.8, "./data_sets/experiment3/datasets/dataset1.csv")
+    generator.create_dataset(d, layer_size, dataset_size, n, 0.8, "./experiments/experiment3/datasets/dataset1.csv")
 
     inputs = []
 
-    with open("./data_sets/experiment3/datasets/dataset1.csv", "r") as file:
+    with open("./experiments/experiment3/datasets/dataset1.csv", "r") as file:
             csvreader = csv.reader(file)
             for input in csvreader:
                 if input[0] != 'header' and input[0] != 'end':
@@ -77,16 +77,16 @@ def experiment3(n, layer_size, dataset_size, no_of_datasets):
 
     for i in range(1, no_of_datasets + 1):
         header = ["header", d, layer_size]
-        with open("./data_sets/experiment3/datasets/dataset" + str(i) +".csv", 'w') as file:
+        with open("./experiments/experiment3/datasets/dataset" + str(i) +".csv", 'w') as file:
             writer = csv.writer(file)
             writer.writerow(header)
             writer.writerows(inputs)
             writer.writerow(["end"])
 
-        run_nn_sat("./data_sets/experiment3/datasets/dataset" + str(i) + ".csv", "./data_sets/experiment3/models/model" + str(i) + ".csv")
+        run_nn_sat("./experiments/experiment3/datasets/dataset" + str(i) + ".csv", "./experiments/experiment3/models/model" + str(i) + ".csv")
 
-        evaluator.create_model("./data_sets/experiment3/models/model" + str(i) + ".csv")
-        evaluator.evaluate_dataset("./data_sets/experiment3/datasets/dataset" + str(i) + ".csv")
+        evaluator.create_model("./experiments/experiment3/models/model" + str(i) + ".csv")
+        evaluator.evaluate_dataset("./experiments/experiment3/datasets/dataset" + str(i) + ".csv")
 
         result.append(["Dataset_" + str(i)])
         for key in range(1, len(evaluator.total_activated_neurons)):
@@ -95,7 +95,7 @@ def experiment3(n, layer_size, dataset_size, no_of_datasets):
 
         d += no_of_datasets
     
-    with open("./data_sets/experiment3/result/activated_neurons.csv", 'w') as file:
+    with open("./experiments/experiment3/result/activated_neurons.csv", 'w') as file:
             writer = csv.writer(file)
             writer.writerows(result)
 

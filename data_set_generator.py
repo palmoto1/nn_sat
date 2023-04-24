@@ -23,7 +23,7 @@ class DatasetGenerator:
             
             #print(inputs)
               
-        header = ["header", len(self.neurons) - 2, len(self.neurons[1])]
+        header = ["header", depth, layer_size]
         with open(file_path, 'w') as file:
             writer = csv.writer(file)
             writer.writerow(header)
