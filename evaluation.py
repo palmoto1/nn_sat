@@ -90,7 +90,8 @@ class Evaluation:
                     #print("Label: ", input[0])
                     #print("Evaluation: ",input[0] == str(self.evaluate(input)))
                     #print()
-            print('Evaluation: ', result)
+            #print('Evaluation: ', result)
+            return result
                 
 
         
