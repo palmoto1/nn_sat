@@ -493,5 +493,5 @@ def run_nn_sat(dataset_path, model_path):
                 
 
 # execute script
-run_nn_sat("./generated_dataset.csv", "./model.csv")
+#run_nn_sat("./generated_dataset.csv", "./model.csv")
 
