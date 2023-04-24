@@ -346,6 +346,8 @@ def merge_dicts(*dicts):
 
 
 def translate_model(model):
+    if not model:
+        return None
     dict = merge_dicts(w_digit, o_digit, i_digit, omega_digit, y_digit)
     translation = []
     for i in model:
@@ -358,6 +360,8 @@ def translate_model(model):
     return translation
 
 def get_accepted_weights(translated_model):
+    if not translate_model:
+        return ["no_solution"]
     result = []
     for entry in translated_model:
         if entry.startswith("omega"):

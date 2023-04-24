@@ -211,8 +211,8 @@ def experiment4_2(n, d, l, dataset_size):
         writer.writerows(result)
 
 
-#experiment1(2, 4, 100)
+#experiment1(2, 2, 150, 10, 8, 10)
 #experiment2(10, 8, 100)
 #experiment3(10, 5, 2, 5)
-#experiment4_1(n=10, d=3, l=5, dataset_size=10)
-#experiment4_2(n=10, d=3, l=5, dataset_size=10)
+#experiment4_1(n=25, d=10, l=10, dataset_size=25)
+#experiment4_2(n=25, d=10, l=10, dataset_size=25)

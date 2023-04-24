@@ -20,7 +20,9 @@ class Evaluation:
             for row in csvreader:
                 weight_variable = row[0]
                 
-                    
+                if not self.parse_neuron_data(weight_variable):
+                    return
+
                 key, pos, threshold = self.parse_neuron_data(weight_variable)
 
                 if key not in self.neurons:
@@ -74,6 +76,9 @@ class Evaluation:
 
     def evaluate_dataset(self, file_path):
 
+        if not self.neurons: # if a model not exists
+            return False
+
         self.total_activated_neurons = {}
         for d in range(1, len(self.neurons) + 1):
             self.total_activated_neurons[d] = 0
@@ -100,7 +105,7 @@ class Evaluation:
         pattern = r'^omega_(\d+)_(\d+)_(\d+(?:\.\d+)?)$'
         match = re.match(pattern, s)
         if not match:
-            raise ValueError(f"Invalid neuron string: {s}")
+            return None
         return match.group(1), match.group(2), int(match.group(3))
     
 
@@ -127,7 +132,7 @@ class Evaluation:
 
     
 
-#network = Evaluation()
+# network = Evaluation()
 #network.create_model("./model.csv")
 #print(network.evaluate_dataset("./generated_dataset.csv"))
 
