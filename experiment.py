@@ -109,7 +109,7 @@ def experiment3(n, layer_size, dataset_size, no_of_datasets):
 
         result.append(["Dataset_" + str(i)])
         for key in range(1, len(evaluator.total_activated_neurons)):
-             result.append(["Depth: " + str(key) + " Activated neurons: " + str(evaluator.total_activated_neurons[key])])
+             result.append(["Depth: " + str(key) + " Activated neurons: " + str(evaluator.total_activated_neurons[key] / dataset_size)])
         result.append(["end"])
 
         d += no_of_datasets
@@ -213,6 +213,7 @@ def experiment4_2(n, d, l, dataset_size):
 
 #experiment1(2, 2, 150, 10, 8, 10)
 #experiment2(10, 8, 100)
-#experiment3(10, 5, 2, 5)
-#experiment4_1(n=25, d=10, l=10, dataset_size=25)
-#experiment4_2(n=25, d=10, l=10, dataset_size=25)
+experiment2(n=25,layer_size=8, dataset_size=25, time_limit_minutes=10)
+#experiment3(n=10, layer_size=8, dataset_size=10, no_of_datasets=5)
+#experiment4_1(n=10, d=3, l=5, dataset_size=10)
+#experiment4_2(n=10, d=3, l=5, dataset_size=10)

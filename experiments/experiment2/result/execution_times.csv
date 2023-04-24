@@ -1,33 +1,54 @@
 Dataset_1
-Depth: 1 Evaluation: True Execution time (seconds): 1.3850679397583008
+Depth: 1 Evaluation: True Execution time (seconds): 4.032928943634033
 end
 Dataset_2
-Depth: 2 Evaluation: True Execution time (seconds): 2.4631519317626953
+Depth: 2 Evaluation: True Execution time (seconds): 5.631673097610474
 end
 Dataset_3
-Depth: 3 Evaluation: True Execution time (seconds): 3.6376121044158936
+Depth: 3 Evaluation: True Execution time (seconds): 7.060452699661255
 end
 Dataset_4
-Depth: 4 Evaluation: True Execution time (seconds): 4.85490608215332
+Depth: 4 Evaluation: True Execution time (seconds): 8.588322162628174
 end
 Dataset_5
-Depth: 5 Evaluation: True Execution time (seconds): 5.7464540004730225
+Depth: 5 Evaluation: True Execution time (seconds): 9.924295902252197
 end
 Dataset_6
-Depth: 6 Evaluation: True Execution time (seconds): 6.997888803482056
+Depth: 6 Evaluation: True Execution time (seconds): 11.502609968185425
 end
 Dataset_7
-Depth: 7 Evaluation: True Execution time (seconds): 8.87912392616272
+Depth: 7 Evaluation: True Execution time (seconds): 13.265000104904175
 end
 Dataset_8
-Depth: 8 Evaluation: True Execution time (seconds): 10.607661008834839
+Depth: 8 Evaluation: True Execution time (seconds): 15.128336191177368
 end
 Dataset_9
-Depth: 9 Evaluation: True Execution time (seconds): 11.064560174942017
+Depth: 9 Evaluation: True Execution time (seconds): 19.078887939453125
 end
 Dataset_10
-Depth: 10 Evaluation: True Execution time (seconds): 51.11967706680298
+Depth: 10 Evaluation: True Execution time (seconds): 18.99717926979065
 end
 Dataset_11
-Depth: 11 Evaluation: True Execution time (seconds): 135.99617791175842
+Depth: 11 Evaluation: True Execution time (seconds): 28.14052104949951
+end
+Dataset_12
+Depth: 12 Evaluation: True Execution time (seconds): 96.23622608184814
+end
+Dataset_13
+Depth: 13 Evaluation: True Execution time (seconds): 22.433562994003296
+end
+Dataset_14
+Depth: 14 Evaluation: True Execution time (seconds): 138.5682179927826
+end
+Dataset_15
+Depth: 15 Evaluation: True Execution time (seconds): 434.0928192138672
+end
+Dataset_16
+Depth: 16 Evaluation: True Execution time (seconds): 202.69298005104065
+end
+Dataset_17
+Depth: 17 Evaluation: True Execution time (seconds): 141.96786403656006
+end
+Dataset_18
+Depth: 18 Evaluation: True Execution time (seconds): 611.3405120372772
 end
