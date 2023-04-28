@@ -132,7 +132,7 @@ class Evaluation:
 
     
 
-# network = Evaluation()
+#network = Evaluation()
 #network.create_model("./model.csv")
 #print(network.evaluate_dataset("./generated_dataset.csv"))
 

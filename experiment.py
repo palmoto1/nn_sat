@@ -210,10 +210,62 @@ def experiment4_2(n, d, l, dataset_size):
         writer = csv.writer(file)
         writer.writerows(result)
 
+# Given a neural network with depth d and l neurons/layer, try to synthesize a network with d -1 and l - 1 neurons/layer and see
+# if it still correctly fits the model.
+def experiment4_3(n, d, l, dataset_size):
+    print('EXPERIMENT 4.3')
+    result = []
+
+    original_dataset_path = "./experiments/experiment4-3/datasets/dataset" + \
+        str(l) + ".csv"
+
+    generator.create_dataset(d, l, dataset_size, n,
+                             0.8, original_dataset_path)
+
+    inputs = []
+    with open(original_dataset_path, "r") as file:
+        csvreader = csv.reader(file)
+        for input in csvreader:
+            if input[0] != 'header' and input[0] != 'end':
+                inputs.append(input)
+
+    #Create and evaluate d-1 and l-1 model from original dataset
+    i = min(d, l)
+    current_d = d
+    current_l = l
+    while i > 0:
+        header = ["header", current_d, current_l]
+        with open("./experiments/experiment4-3/datasets/dataset" + str(i) + ".csv", 'w') as file:
+            writer = csv.writer(file)
+            writer.writerow(header)
+            writer.writerows(inputs)
+            writer.writerow(["end"])
+
+        run_nn_sat("./experiments/experiment4-3/datasets/dataset" + str(i) +
+                   ".csv", "./experiments/experiment4-3/models/model" + str(i) + ".csv")
+
+        evaluator.create_model(
+            "./experiments/experiment4-3/models/model" + str(i) + ".csv")
+        evaluation = evaluator.evaluate_dataset(
+            "./experiments/experiment4-3/datasets/dataset" + str(i) + ".csv")
+
+        result.append(["Dataset_" + str(i)])
+        result.append(["Depth: " + str(current_d) + " Layer size: " + str(current_l) + " Evaluation: " + str(evaluation)])
+        result.append(["end"])
+
+        i -= 1
+        current_d -= 1
+        current_l -= 1
+
+    with open("./experiments/experiment4-3/result/smaller_model_3.csv", 'w') as file:
+        writer = csv.writer(file)
+        writer.writerows(result)
+
 
 #experiment1(2, 2, 150, 10, 8, 10)
 #experiment2(10, 8, 100)
-experiment2(n=25,layer_size=8, dataset_size=25, time_limit_minutes=10)
+#experiment2(n=25,layer_size=8, dataset_size=25, time_limit_minutes=10)
 #experiment3(n=10, layer_size=8, dataset_size=10, no_of_datasets=5)
 #experiment4_1(n=10, d=3, l=5, dataset_size=10)
 #experiment4_2(n=10, d=3, l=5, dataset_size=10)
+experiment4_3(n=25, d=10, l=10, dataset_size=25)

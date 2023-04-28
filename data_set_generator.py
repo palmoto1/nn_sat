@@ -11,11 +11,12 @@ class DatasetGenerator:
         
     def create_dataset(self, depth, layer_size, no_of_inputs, input_length, distribution_threshold, file_path):
         inputs = []
+        self.create_model(depth, layer_size, input_length) # could be inside loop, but then the model is also recreated
 
         while not self.check_distribution(inputs, distribution_threshold):
             
             inputs = []
-            self.create_model(depth, layer_size, input_length)
+            #self.create_model(depth, layer_size, input_length)
 
             for _ in range(no_of_inputs):
               input = self.create_input(input_length)
@@ -128,21 +129,6 @@ class DatasetGenerator:
 
         return label + input
 
-        
-
-
-    
-    
-    #For overnight dataset generation
-    def generate_datasets_by_depth(self, layer_size, n, dataset_size, no_datasets):
-        d = 1
-        while(d <= no_datasets):
-            print(d)
-            file_path = "./datasets/generated_dataset" + str(d) + ".csv"
-            #self.create_model(d, layer_size, n)
-            #self.create_inputs(dataset_size, n, file_path)
-            self.create_dataset(d, layer_size, dataset_size, n, file_path)
-            d += 1
 
 
     def print_model(self):
