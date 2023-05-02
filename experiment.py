@@ -39,38 +39,53 @@ def experiment1(start, factor, range, depth, layer_size, dataset_size):
             writer.writerows(result)
         
 # #Investigates the relation between d and time for computing the network. l, n and dataset_size are constant.
+#TODO: Rewrite experiment 2 so the test i performed on the same dataset but with a header that has increased depth.
 def experiment2(n, layer_size, dataset_size, time_limit_minutes):
     print('EXPERIMENT 2')
+    
     result = []
-
     d = 1
     running = True
     
+    generator.create_dataset(d, layer_size, dataset_size, n,
+                             0.8, "./experiments/experiment2/datasets/dataset1.csv")
+
+    inputs = []
+
+    with open("./experiments/experiment2/datasets/dataset1.csv", "r") as file:
+        csvreader = csv.reader(file)
+        for input in csvreader:
+            if input[0] != 'header' and input[0] != 'end':
+                inputs.append(input)
+    
     while(running):
         print('d:', d)
-        generator.create_dataset(d, layer_size, dataset_size, n, 0.8, "./experiments/experiment2/datasets/dataset" + str(d) + ".csv")
-
-        print('Dataset generated')  # TEST - EXPERIMENT
         
         start = time.time()
         run_nn_sat("./experiments/experiment2/datasets/dataset" + str(d) + ".csv", "./experiments/experiment2/models/model" + str(d) + ".csv")
         stop = time.time()
         
+        execution_time = stop - start
+        print('Execution time (sec): ', execution_time)
+        
         evaluator.create_model("./experiments/experiment2/models/model" + str(d) + ".csv")
         evaluation = evaluator.evaluate_dataset("./experiments/experiment2/datasets/dataset" + str(d) + ".csv")
         
-        execution_time = stop - start
-        #print('Execution time (sec): ', execution_time)
-
         result.append(["Dataset_" + str(d)])
-        result.append(["Depth: " + str(d) + " Evaluation: " + str(evaluation) + " Execution time (seconds): " + str(execution_time)])
+        result.append(["Depth: " + str(d)], ["Evaluation: " + str(evaluation)], ["Execution time (seconds): " + str(execution_time)])
         result.append(["end"])
-        
+
         if(execution_time/60 >= time_limit_minutes):
             running = False
-        
-        d += 1
-
+        else:
+            d += 1
+            header = ["header", d, layer_size]
+            with open("./experiments/experiment2/datasets/dataset" + str(d) + ".csv", 'w') as file:
+                writer = csv.writer(file)
+                writer.writerow(header)
+                writer.writerows(inputs)
+                writer.writerow(["end"])
+            
     with open("./experiments/experiment2/result/execution_times.csv", 'w') as file:
             writer = csv.writer(file)
             writer.writerows(result)
@@ -213,7 +228,7 @@ def experiment4_2(n, d, l, dataset_size):
 
 #experiment1(2, 2, 150, 10, 8, 10)
 #experiment2(10, 8, 100)
-experiment2(n=25,layer_size=8, dataset_size=25, time_limit_minutes=10)
+experiment2(n=10,layer_size=4, dataset_size=10, time_limit_minutes=0.5)
 #experiment3(n=10, layer_size=8, dataset_size=10, no_of_datasets=5)
 #experiment4_1(n=10, d=3, l=5, dataset_size=10)
 #experiment4_2(n=10, d=3, l=5, dataset_size=10)
