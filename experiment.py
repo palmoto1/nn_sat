@@ -78,45 +78,47 @@ def experiment2(n, layer_size, dataset_size, time_limit_minutes):
 
 #Investigates the influence of d with the number of activated neurons at layer d.
 #I.e. If d = 10, how many neurons are activated in that layer?
-def experiment3(n, layer_size, dataset_size, no_of_datasets):
+def experiment3(n, depth_step, layer_size, dataset_size, no_of_datasets, dataset_groups):
     print('EXPERIMENT 3')
 
-    result = []
-    d = no_of_datasets
+    
+    for i in range(1, no_of_datasets + 1):
+        generator.create_dataset(depth_step, layer_size, dataset_size, n, 0.8, "./experiments/experiment3/datasets/dataset" + str(i) +".csv")
+        inputs = []
 
-    generator.create_dataset(d, layer_size, dataset_size, n, 0.8, "./experiments/experiment3/datasets/dataset1.csv")
-
-    inputs = []
-
-    with open("./experiments/experiment3/datasets/dataset1.csv", "r") as file:
+        with open("./experiments/experiment3/datasets/dataset" + str(i) +".csv", "r") as file:
             csvreader = csv.reader(file)
             for input in csvreader:
                 if input[0] != 'header' and input[0] != 'end':
                     inputs.append(input)
 
-    for i in range(1, no_of_datasets + 1):
-        header = ["header", d, layer_size]
-        with open("./experiments/experiment3/datasets/dataset" + str(i) +".csv", 'w') as file:
-            writer = csv.writer(file)
-            writer.writerow(header)
-            writer.writerows(inputs)
-            writer.writerow(["end"])
+        d = depth_step * 2
+        for j in range(1, dataset_groups):
+            k = i + depth_step * j
+            header = ["header", d , layer_size]
+            with open("./experiments/experiment3/datasets/dataset" + str(k) +".csv", 'w') as file:
+                writer = csv.writer(file)
+                writer.writerow(header)
+                writer.writerows(inputs)
+                writer.writerow(["end"])
+            d += depth_step
 
-        run_nn_sat("./experiments/experiment3/datasets/dataset" + str(i) + ".csv", "./experiments/experiment3/models/model" + str(i) + ".csv")
+    result = []
+    for i in range(1, dataset_groups * no_of_datasets + 1):    
+        #run_nn_sat("./experiments/experiment3/datasets/dataset" + str(i) + ".csv", "./experiments/experiment3/models/model" + str(i) + ".csv")
 
         evaluator.create_model("./experiments/experiment3/models/model" + str(i) + ".csv")
         evaluator.evaluate_dataset("./experiments/experiment3/datasets/dataset" + str(i) + ".csv")
 
         result.append(["Dataset_" + str(i)])
         for key in range(1, len(evaluator.total_activated_neurons)):
-             result.append(["Depth: " + str(key) + " Activated neurons: " + str(evaluator.total_activated_neurons[key] / dataset_size)])
+            result.append(["Depth: " + str(key) + " Activated neurons: " + str(evaluator.total_activated_neurons[key] / dataset_size)])
         result.append(["end"])
 
-        d += no_of_datasets
     
     with open("./experiments/experiment3/result/activated_neurons.csv", 'w') as file:
-            writer = csv.writer(file)
-            writer.writerows(result)
+         writer = csv.writer(file)
+         writer.writerows(result)
 
     
 # Given a neural network with d layers, try to synthesize a network with d - 1 layers and see
@@ -265,7 +267,7 @@ def experiment4_3(n, d, l, dataset_size):
 #experiment1(2, 2, 150, 10, 8, 10)
 #experiment2(10, 8, 100)
 #experiment2(n=25,layer_size=8, dataset_size=25, time_limit_minutes=10)
-#experiment3(n=10, layer_size=8, dataset_size=10, no_of_datasets=5)
+experiment3(n=10, depth_step=5, layer_size=8, dataset_size=10, no_of_datasets=5)
 #experiment4_1(n=10, d=3, l=5, dataset_size=10)
 #experiment4_2(n=10, d=3, l=5, dataset_size=10)
-experiment4_3(n=25, d=10, l=10, dataset_size=25)
+#experiment4_3(n=25, d=10, l=10, dataset_size=25)
