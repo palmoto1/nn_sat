@@ -11,12 +11,12 @@ class DatasetGenerator:
         
     def create_dataset(self, depth, layer_size, no_of_inputs, input_length, distribution_threshold, file_path):
         inputs = []
-        self.create_model(depth, layer_size, input_length) # could be inside loop, but then the model is also recreated
+        #self.create_model(depth, layer_size, input_length) # could be inside loop, but then the model is also recreated
 
         while not self.check_distribution(inputs, distribution_threshold):
             
             inputs = []
-            #self.create_model(depth, layer_size, input_length)
+            self.create_model(depth, layer_size, input_length)
 
             for _ in range(no_of_inputs):
               input = self.create_input(input_length)

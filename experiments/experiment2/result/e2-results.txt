@@ -1,0 +1,93 @@
+Round 1:
+Depth: 1, Execution time (seconds): 3.9868717193603516
+Depth: 2, Execution time (seconds): 5.574007987976074
+Depth: 3, Execution time (seconds): 7.035905122756958
+Depth: 4, Execution time (seconds): 8.480435848236084
+Depth: 5, Execution time (seconds): 10.525253057479858
+Depth: 6, Execution time (seconds): 11.446147918701172
+Depth: 7, Execution time (seconds): 13.391141891479492
+Depth: 8, Execution time (seconds): 14.85551905632019
+Depth: 9, Execution time (seconds): 16.35099697113037
+Depth: 10, Execution time (seconds): 21.45262622833252
+Depth: 11, Execution time (seconds): 113.6194999217987
+Depth: 12, Execution time (seconds): 37.71010994911194
+Depth: 13, Execution time (seconds): 40.339860916137695
+Depth: 14, Execution time (seconds): 122.05470085144043
+Depth: 15, Execution time (seconds): 125.69144105911255
+Depth: 16, Execution time (seconds): 316.73894214630127
+
+Round 2:
+Depth: 1, Execution time (seconds): 4.023301124572754
+Depth: 2, Execution time (seconds): 5.6027350425720215
+Depth: 3, Execution time (seconds): 7.0387282371521
+Depth: 4, Execution time (seconds): 8.471012830734253
+Depth: 5, Execution time (seconds): 9.917380809783936
+Depth: 6, Execution time (seconds): 11.369145154953003
+Depth: 7, Execution time (seconds): 15.565860748291016
+Depth: 8, Execution time (seconds): 15.253683090209961
+Depth: 9, Execution time (seconds): 30.991829872131348
+Depth: 10, Execution time (seconds): 17.72832989692688
+Depth: 11, Execution time (seconds): 53.81896781921387
+Depth: 12, Execution time (seconds): 66.06450891494751
+Depth: 13, Execution time (seconds): 126.75912094116211
+Depth: 14, Execution time (seconds): 87.28958797454834
+Depth: 15, Execution time (seconds): 123.28356194496155
+Depth: 16, Execution time (seconds): 305.8368549346924
+Depth: 17, Execution time (seconds): 499.4656140804291
+Depth: 18, Execution time (seconds): 466.39487624168396
+
+Round 3:
+Depth: 1, Execution time (seconds): 4.00464391708374
+Depth: 2, Execution time (seconds): 5.629364967346191
+Depth: 3, Execution time (seconds): 7.079946041107178
+Depth: 4, Execution time (seconds): 8.533865928649902
+Depth: 5, Execution time (seconds): 10.176998138427734
+Depth: 6, Execution time (seconds): 11.88432002067566
+Depth: 7, Execution time (seconds): 13.208701848983765
+Depth: 8, Execution time (seconds): 19.518528938293457
+Depth: 9, Execution time (seconds): 20.25158667564392
+Depth: 10, Execution time (seconds): 20.062894821166992
+Depth: 11, Execution time (seconds): 19.862079858779907
+Depth: 12, Execution time (seconds): 72.426589012146
+Depth: 13, Execution time (seconds): 115.49524402618408
+Depth: 14, Execution time (seconds): 150.06763124465942
+Depth: 15, Execution time (seconds): 468.07122588157654
+
+Round 4:
+Depth: 1, Execution time (seconds): 4.035890817642212
+Depth: 2, Execution time (seconds): 5.64137601852417
+Depth: 3, Execution time (seconds): 7.141966104507446
+Depth: 4, Execution time (seconds): 8.547290086746216
+Depth: 5, Execution time (seconds): 10.095984935760498
+Depth: 6, Execution time (seconds): 11.755132913589478
+Depth: 7, Execution time (seconds): 13.534050941467285
+Depth: 8, Execution time (seconds): 15.832736015319824
+Depth: 9, Execution time (seconds): 16.860333919525146
+Depth: 10, Execution time (seconds): 18.164462089538574
+Depth: 11, Execution time (seconds): 70.52052307128906
+Depth: 12, Execution time (seconds): 39.865805864334106
+Depth: 13, Execution time (seconds): 112.79992127418518
+Depth: 14, Execution time (seconds): 233.47754311561584
+Depth: 15, Execution time (seconds): 69.86526107788086
+Depth: 16, Execution time (seconds): 324.4043200016022
+Depth: 17, Execution time (seconds): 425.4265468120575
+
+Round 5:
+Depth: 1, Execution time (seconds): 3.9950778484344482
+Depth: 2, Execution time (seconds): 5.5022289752960205
+Depth: 3, Execution time (seconds): 6.926487684249878
+Depth: 4, Execution time (seconds): 8.312872409820557
+Depth: 5, Execution time (seconds): 9.652849912643433
+Depth: 6, Execution time (seconds): 11.860918045043945
+Depth: 7, Execution time (seconds): 13.970396041870117
+Depth: 8, Execution time (seconds): 15.982152223587036
+Depth: 9, Execution time (seconds): 17.507476091384888
+Depth: 10, Execution time (seconds): 20.142048120498657
+Depth: 11, Execution time (seconds): 45.077406883239746
+Depth: 12, Execution time (seconds): 150.4060502052307
+Depth: 13, Execution time (seconds): 278.861691236496
+Depth: 14, Execution time (seconds): 90.62944483757019
+Depth: 15, Execution time (seconds): 178.55730199813843
+Depth: 16, Execution time (seconds): 267.46285486221313
+Depth: 17, Execution time (seconds): 581.2883231639862
+Depth: 18, Execution time (seconds): 411.05019211769104
