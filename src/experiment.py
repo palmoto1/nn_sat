@@ -1,6 +1,6 @@
 from nn_sat import *
-from data_set_generator import *
-from evaluation import *
+from src.data_set_generator import *
+from src.evaluation import *
 import csv
 
 import time
