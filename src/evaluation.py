@@ -126,10 +126,11 @@ class Evaluation:
 
 
     
+# THESE CALLS CAN BE USED FOR TESTING
 
-network = Evaluation()
-network.create_model("./model.csv")
-print(network.evaluate_dataset("./generated_dataset.csv"))
+#network = Evaluation()
+#network.create_model("./model.csv")
+#print(network.evaluate_dataset("./generated_dataset.csv"))
 
         
 

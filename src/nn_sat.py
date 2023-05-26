@@ -500,7 +500,7 @@ def run_nn_sat(dataset_path, model_path):
                     a.append(int(s))   
                 dataset.append(a)
                 
+# THIS CALL CAN BE USED FOR TESTING
 
-# execute script
-run_nn_sat("./generated_dataset.csv", "./model.csv")
+#run_nn_sat("./generated_dataset.csv", "./model.csv")
 
