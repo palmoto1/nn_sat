@@ -3,7 +3,6 @@ from pysat.solvers import Glucose3
 from array import *
 import csv
 
-# better naming of variables
 
 formula = CNF()
 solver = Glucose3()
@@ -151,6 +150,7 @@ def generate_simulation_variables(depth, layer_size, m, k, max):
                         y_digit[count] = s
                         count += 1
 
+
 # generate all variables
 def generate_variables():
     generate_dataset_variables(m, n)
@@ -171,6 +171,7 @@ def relate_w_i(layer_size, m, k):
                 formula.append([i_str[i_key], -w_str[w_key]])
                 formula.append([-i_str[i_key], w_str[w_key]])
 
+
 # create clauses relating gate output variables with gate input variables of the following layer (should be equivalent)
 def relate_o_i(depth, layer_size, m):
 
@@ -187,7 +188,6 @@ def relate_o_i(depth, layer_size, m):
                         break
         
 
-
 # # create clauses relating dataset labels with output variables of the last gate in the network (they should be equivalent)
 def relate_w_o(depth, m):
     
@@ -196,6 +196,7 @@ def relate_w_o(depth, m):
         o_key = "o" + '_' + str(i+1) + '_' + str(depth+1) + '_' + str(1)
         formula.append([w_str[w_key], -o_str[o_key]])
         formula.append([-w_str[w_key], o_str[o_key]])
+
 
 # create clauses relating output variables with weight variables and simulations variables
 def relate_y_omega_o(depth, layer_size, m, max, poitive_output):
@@ -222,6 +223,7 @@ def relate_y_omega_o(depth, layer_size, m, max, poitive_output):
                             
                 if d == depth: # if we are at the output layer we only want to add clauses for the single output gate so we break here
                     break
+
 
 # define the uniqueness of simulation variables, i.e. of n variables there can only be one that is true while the rest have to be false
 def uniqueness_y(depth, layer_size, m, k, max):
@@ -312,7 +314,6 @@ def relate_partial_sums_inputs(depth, layer_size, m, k, max, positive_input):
                         break
 
 
-
 def generate_formula():
     relate_w_i(l, m, k)
     relate_o_i(d, l, m)
@@ -345,6 +346,7 @@ def merge_dicts(*dicts):
     return result
 
 
+# translates model to strings instead of digits
 def translate_model(model):
     if not model:
         return None
@@ -359,6 +361,8 @@ def translate_model(model):
 
     return translation
 
+
+# gets only the weight variables
 def get_accepted_weights(translated_model):
     if not translate_model:
         return ["no_solution"]
@@ -369,6 +373,7 @@ def get_accepted_weights(translated_model):
         
     return result
 
+
 def get_positive_outputs(translated_model):
     result = []
     for entry in translated_model:
@@ -376,7 +381,6 @@ def get_positive_outputs(translated_model):
             result.append(entry)
         
     return result
-
 
 
 def reset():
@@ -433,6 +437,8 @@ def reset():
     y_str = {}
     y_digit = {}
 
+
+# main function
 def run_nn_sat(dataset_path, model_path):
     global solver
     global formula
@@ -466,8 +472,8 @@ def run_nn_sat(dataset_path, model_path):
                 fit_data()
 
                 solver.append_formula(formula)
-                solution = solver.solve(assumptions) # saved value not used
-                print('Solution found') #TEST - EXPERIMENT
+                solution = solver.solve(assumptions)
+                print('Solution found: ', solution) 
                 model = solver.get_model()
 
                 translated_model = translate_model(model)
@@ -484,7 +490,6 @@ def run_nn_sat(dataset_path, model_path):
                     writer = csv.writer(file)
                     writer.writerows(accepted_weights)
 
-
                 reset()
             elif row[0] == 'header':
                 d = int(row[1])
@@ -497,5 +502,5 @@ def run_nn_sat(dataset_path, model_path):
                 
 
 # execute script
-#run_nn_sat("./generated_dataset.csv", "./model.csv")
+run_nn_sat("./generated_dataset.csv", "./model.csv")
 

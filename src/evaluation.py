@@ -10,16 +10,14 @@ class Evaluation:
         self.layer_sums = {}
         self.total_activated_neurons = {} # to be able to get number of activated neurons per layer for a dataset
 
+    # generate a model from a file containing weight variables determining the network synthesis
     def create_model(self, file_path):
         self.neurons = {}
 
         with open(file_path, "r") as file:
             csvreader = csv.reader(file)
-
-
             for row in csvreader:
                 weight_variable = row[0]
-                
                 if not self.parse_neuron_data(weight_variable):
                     return
 
@@ -27,10 +25,8 @@ class Evaluation:
 
                 if key not in self.neurons:
                     self.neurons[key] = []
-
-                                    
+                 
                 self.neurons[key].append(Neuron(key, pos, threshold)) 
-
 
             for key in self.neurons:
                 n = int(key)
@@ -39,6 +35,7 @@ class Evaluation:
                         neuron.predecessors = self.neurons[str(n - 1)] 
 
 
+    # creates the input layer of a model
     def create_input_layer(self, input):
 
         self.neurons[str(0)] = []
@@ -51,6 +48,7 @@ class Evaluation:
                         neuron.predecessors = self.neurons[str(0)]
 
 
+    # evaluates if an input is accepted or rejected by the model by returning the model output 
     def evaluate(self, input):
         self.create_input_layer(input)
 
@@ -60,12 +58,12 @@ class Evaluation:
 
         for d in range(len(self.neurons)):
             for n in self.neurons[str(d)]:
-                if d == 0: # input layer
+                if d == 0: # input layer, the thresholds are the same as the input bits of the string
                     self.layer_sums[0] += n.threshold
                     
                 elif self.layer_sums[d-1] >= n.threshold:
                     self.layer_sums[d] += 1
-                    self.total_activated_neurons[d] += 1
+                    self.total_activated_neurons[d] += 1 # also keep track on total no of activated neuron for a whole dataset
                     
 
         output_layer = len(self.layer_sums) - 1
@@ -73,10 +71,10 @@ class Evaluation:
         return self.layer_sums[output_layer]
 
 
-
+    # evaluate if the model is consistent with a dataset by returning True or False
     def evaluate_dataset(self, file_path):
 
-        if not self.neurons: # if a model not exists
+        if not self.neurons: # if a model does not exist we cannot evaluate
             return False
 
         self.total_activated_neurons = {}
@@ -98,9 +96,7 @@ class Evaluation:
             return result
                 
 
-        
-
-    
+    # parses data from a weight variable string
     def parse_neuron_data(self, s):
         pattern = r'^omega_(\d+)_(\d+)_(\d+(?:\.\d+)?)$'
         match = re.match(pattern, s)
@@ -108,7 +104,6 @@ class Evaluation:
             return None
         return match.group(1), match.group(2), int(match.group(3))
     
-
 
     def print_model(self):
 
@@ -132,9 +127,9 @@ class Evaluation:
 
     
 
-#network = Evaluation()
-#network.create_model("./model.csv")
-#print(network.evaluate_dataset("./generated_dataset.csv"))
+network = Evaluation()
+network.create_model("./model.csv")
+print(network.evaluate_dataset("./generated_dataset.csv"))
 
         
 
